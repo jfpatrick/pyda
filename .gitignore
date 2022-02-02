@@ -2,9 +2,13 @@ pyda/_version.py
 
 .idea/
 
+__pycache__
 *.egg-info
 *.pkg-info
 
 venv/
 
-dist/
+docs/source/api
+docs/build
+/build
+/dist
