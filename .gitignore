@@ -1,3 +1,5 @@
+pyda/_version.py
+
 .idea/
 
 *.egg-info
