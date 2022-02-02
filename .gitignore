@@ -1,0 +1,8 @@
+.idea/
+
+*.egg-info
+*.pkg-info
+
+venv/
+
+dist/

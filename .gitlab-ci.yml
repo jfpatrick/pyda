@@ -1,0 +1,35 @@
+
+# Use the acc-py-devtools templates found at
+# https://gitlab.cern.ch/-/ide/project/acc-co/devops/python/acc-py-devtools/blob/master/-/acc_py_devtools/templates/gitlab-ci/python.yml.
+include:
+ - project: acc-co/devops/python/acc-py-devtools
+   file: acc_py_devtools/templates/gitlab-ci/python.yml
+
+variables:
+  project_name: pyda
+  PY_VERSION: '3.7'
+
+
+# A full installation of pyda, tested with pytest.
+test_install:
+  extends: .acc_py_full_test
+
+
+# A development installation of pyda tested with pytest.
+test_dev:
+  extends: .acc_py_dev_test
+
+
+# A push of the source distribution to the acc-py PyPI, only on git tag.
+release_sdist_on_tag:
+  extends: .acc_py_release_sdist
+
+
+# A dev build of the documentation, made available through cern.ch/acc-py.
+build_docs:
+  extends: .acc_py_build_docs
+
+
+# A release build of the documentation, made available through cern.ch/acc-py.
+build_docs_on_tag:
+  extends: .acc_py_build_docs_on_tag
