@@ -4,7 +4,7 @@ import pyda
 
 
 project = "pyda"
-author = "Phil Elson"
+author = "Acc-Py team @ BE-CSS"
 version = pyda.__version__
 
 copyright = "{0}, CERN".format(datetime.datetime.now().year)

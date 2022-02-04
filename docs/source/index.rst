@@ -4,17 +4,31 @@ pyda
 Introduction
 ------------
 
-SHORT DESCRIPTION OF PROJECT
+PyDA is a Pythonic, `device-property
+<https://be-dep-co.web.cern.ch/sites/be-dep-co.web.cern.ch/files/Introduction_to_the_BE-CO_Control_System.pdf>`_
+model based, API for accessing device data.
 
 
 Installation
 ------------
-
 Using the `acc-py Python package index
 <https://wikis.cern.ch/display/ACCPY/Getting+started+with+acc-python#Gettingstartedwithacc-python-OurPythonPackageRepositoryrepo>`_
-``pyda`` can be pip installed with::
+:mod:`pyda` can be pip installed with::
 
    pip install pyda
+
+.. note:: WARNING: THIS DOESN'T WORK, AND IS A NAME THAT WILL COLLIDE WITH THE OUTSIDE WORLD
+
+PyDA is bound to utilize pluggable data providers, therefore you likely will need to install the provider.
+
+.. note:: At this point, we aim to provide JPype-based JAPC provider as the first available type
+
+All possible providers are deliberately not bundled into PyDA, since they may have very specific dependencies (e.g.
+Java libraries for JPype-based providers).
+
+If you wish to install the JAPC device provider, please include ``japc-provider`` extra when installing PyDA::
+
+   pip install pyda[japc-provider]
 
 
 Documentation contents
@@ -38,4 +52,3 @@ Documentation contents
 
     api
     genindex
-
