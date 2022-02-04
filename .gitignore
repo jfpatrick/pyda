@@ -2,6 +2,7 @@ pyda/_version.py
 
 .idea/
 
+__pycache__
 *.egg-info
 *.pkg-info
 
