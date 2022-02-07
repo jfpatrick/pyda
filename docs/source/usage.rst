@@ -9,17 +9,18 @@ user to pick the right tool for the job, based on complexity/approach/syntax obj
 Pluggable architecture for backends makes it possible to extend PyDA in order to send & receive device-property data
 to/from a number of sources. These plugins are called "PyDA providers" (link required).
 
-To better illustrate the utility, let's take an example of using a common device-data provider, :class:`pyda_japc.JAPCProvider`,
-along with a simple synchronous API (:class:`pyda.SyncClient`) for convenient and easy to reason about data flow in an interactive context::
+To better illustrate the utility, let's take an example of using a common device-data provider (:class:`pyda_japc.JAPCProvider`),
+combined with a simple synchronous API (:class:`pyda.SimpleClient`) for convenient and easy to reason about data flow,
+especially in interactive and scripting contexts::
 
     import pyda
     from pyda_japc import JAPCProvider
 
-    client = pyda.SyncClient(provider=JAPCProvider())
+    client = pyda.SimpleClient(provider=JAPCProvider())
 
 With such a client, we can get a data property from a particular device::
 
-    data = client.get('SOME.DEVICE/SomeProperty', selector='SOME.DEVICE.USER')
+    data = client.get('SOME.DEVICE/SomeProperty', selector='SOME.TIMING.USER')
 
 The returned type is a :class:`pyda_core.model.AcquiredDataTypeValue`, which is an immutable version of a
 :class:`pyda_core.model.DataTypeValue` purposed for incoming data. A :class:`pyda_core.model.DataTypeValue` provides
@@ -40,10 +41,10 @@ Instead we must expose the data in a different container in order to modify the 
 
 With this we can feed the property data back to the device::
 
-    client.set('SOME.DEVICE/SomeProperty', new_data, selector='SOME.DEVICE.USER')
+    client.set('SOME.DEVICE/SomeProperty', new_data, selector='SOME.TIMING.USER')
 
 Had the property allowed "partial setting" (as can be determined from
 :attr:`DataTypeValue.accepts_partial <pyda_core.model.DataTypeValue.accepts_partial>`),
 we could alternatively have simply set the new field directly::
 
-    client.set('SOME.DEVICE/SomeProperty', {'some-field': 15}, selector='SOME.DEVICE.USER')
+    client.set('SOME.DEVICE/SomeProperty', {'some-field': 15}, selector='SOME.TIMING.USER')
