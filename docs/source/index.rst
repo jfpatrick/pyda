@@ -46,6 +46,7 @@ Documentation contents
     :maxdepth: 1
 
     usage
+    async_usage
 
 .. toctree::
     :caption: Reference docs

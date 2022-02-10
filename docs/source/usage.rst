@@ -78,3 +78,39 @@ we could alternatively have simply set the new field directly::
 
 .. note:: All client APIs have keyword-only arguments. This is done to reduce the likelihood of breaking changes in the
           prototype, should the argument composition change in the future.
+
+Subscriptions
+-------------
+
+It is common to want to listen and react to ongoing changes to a device property.
+Subscriptions are used for this purpose. Most providers guarantee an initial value is given even if the device
+itself hasn't changed its value - this behaviour is provider specific (TO BE DETERMINED).
+
+.. note:: Verify that this is provider specific (in my opinion this is property configuration (to give first update or not)
+
+The simplest way to subscribe to data is to use a callback function::
+
+    import pyda
+    from pyda_japc import JAPCProvider
+
+    client = pyda.CallbackClient(provider=JAPCProvider())
+    sub = client.subscribe(device='SOME.DEVICE',
+                           prop='SomeProperty',
+                           selector='SOME.TIMING.USER',
+                           callback=print)
+    sub.start()
+
+This will result in property data being printed to the ``stdout`` whenever subscription notifications are received.
+
+.. note:: Subscription notifications are asynchronous, therefore when put into a simple sequential script, this code
+          is unlikely to produce any output, because Python interpreter will finish operation before any notification
+          is received.
+
+Note that the ``CallbackClient`` is implicitly stateful, and holds on to the references of the subscriptions::
+
+    for sub in client.subscriptions:
+        print(f'{sub.device_name}/{sub.property_name}')
+    ...
+
+There are other types of asynchronous clients, which have a different syntax, allowing user to choose client API based
+on the preferences or needs. Please see :doc:`async_usage` for details.
