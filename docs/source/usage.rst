@@ -20,7 +20,9 @@ especially in interactive and scripting contexts::
 
 With such a client, we can get a data property from a particular device::
 
-    data = client.get('SOME.DEVICE/SomeProperty', selector='SOME.TIMING.USER')
+    data = client.get(device='SOME.DEVICE',
+                      prop='SomeProperty',
+                      selector='SOME.TIMING.USER')
 
 The returned type is a :class:`pyda_core.model.AcquiredDataTypeValue`, which is an immutable version of a
 :class:`pyda_core.model.DataTypeValue` purposed for incoming data. A :class:`pyda_core.model.DataTypeValue` provides
@@ -41,10 +43,16 @@ Instead we must expose the data in a different container in order to modify the 
 
 With this we can feed the property data back to the device::
 
-    client.set('SOME.DEVICE/SomeProperty', new_data, selector='SOME.TIMING.USER')
+    client.set(device='SOME.DEVICE',
+               prop='SomeProperty',
+               selector='SOME.TIMING.USER',
+               value=new_data)
 
 Had the property allowed "partial setting" (as can be determined from
 :attr:`DataTypeValue.accepts_partial <pyda_core.model.DataTypeValue.accepts_partial>`),
 we could alternatively have simply set the new field directly::
 
-    client.set('SOME.DEVICE/SomeProperty', {'some-field': 15}, selector='SOME.TIMING.USER')
+    client.set(device='SOME.DEVICE',
+               prop='SomeProperty',
+               selector='SOME.TIMING.USER',
+               value={'some-field': 15})
