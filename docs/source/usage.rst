@@ -34,6 +34,8 @@ strongly-typed dictionary-like data structures. The API is intentionally similar
 We can get hold of a particular field from the property with standard dictionary-like access. For example::
 
     data['some-field']
+    # or
+    data.get('some-field', default='Fallback value')
 
 Note that data is immutable, so you cannot change existing values.
 Instead we must expose the data in a different container in order to modify the field values::
