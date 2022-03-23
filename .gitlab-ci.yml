@@ -20,6 +20,8 @@ variables:
 
 # Pull pyds_model wheel and install before running any dependent jobs
 .model_dep:
+  variables:
+    PIP_FIND_LINKS: ./wheelhouse/
   needs:
     - project: "${ACCSOFT_DS_MODEL_REPO}"
       job: build_wheel
@@ -32,9 +34,6 @@ test_install:
   extends:
     - .model_dep
     - .acc_py_full_test
-  before_script:
-    - python -m pip install --find-links=./wheelhouse/ pyds-model
-    - python -m pip install -e ${project_root}[test]
 
 
 # A development installation of pyda tested with pytest.
@@ -42,10 +41,6 @@ test_dev:
   extends:
     - .model_dep
     - .acc_py_dev_test
-  before_script:
-    - python -m pip install --find-links=./wheelhouse/ pyds-model
-    - python -m pip install -e ${project_root}[test]
-    - python -m pip install pytest-cov
 
 
 # A push of the source distribution to the acc-py PyPI, only on git tag.
@@ -58,8 +53,6 @@ build_docs:
   extends:
     - .model_dep
     - .acc_py_build_docs
-  before_script:
-    - python -m pip install --find-links=./wheelhouse/ pyds-model
 
 
 # A release build of the documentation, made available through cern.ch/acc-py.
