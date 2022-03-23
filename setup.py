@@ -16,8 +16,7 @@ with (HERE / 'README.md').open('rt') as fh:
 
 REQUIREMENTS: dict = {
     'core': [
-        # 'mandatory-requirement1',
-        # 'mandatory-requirement2',
+        'pyds-model',
     ],
     'test': [
         'pytest',
