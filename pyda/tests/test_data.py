@@ -202,3 +202,15 @@ def test_Selector_repr(arg, expected_output):
 def test_Selector_eq(obj1, obj2, expect_equal):
     assert (obj1 == obj2) == expect_equal
     assert (obj1 != obj2) != expect_equal
+
+
+def test_response_init_fails():
+    with pytest.raises(
+        AssertionError, match='"value" and "exception" '
+        'are mutually exclusive arguments',
+    ):
+        data.PropertyAccessResponse(
+            query=mock.MagicMock(),
+            value=mock.MagicMock(),
+            exception=data.PropertyAccessError("Test error"),
+        )
