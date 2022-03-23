@@ -214,3 +214,45 @@ def test_response_init_fails():
             value=mock.MagicMock(),
             exception=data.PropertyAccessError("Test error"),
         )
+
+
+def test_response_value_succeeds():
+    val = mock.MagicMock()
+    resp = data.PropertyAccessResponse(
+        query=mock.MagicMock(),
+        value=val,
+    )
+    assert resp.value is val
+
+
+def test_response_value_fails():
+    exc = data.PropertyAccessError("Test error")
+    resp = data.PropertyAccessResponse(
+        query=mock.MagicMock(),
+        exception=exc,
+    )
+    assert resp.exception is exc
+    with pytest.raises(data.PropertyAccessError, match="Test error"):
+        resp.value
+
+
+@pytest.mark.parametrize(
+    "kwargs,expected_str", [
+        (
+                {"value": "VALUE_OUTPUT", "query": "QUERY_OUTPUT"},
+                "-- PropertyAccessResponse from QUERY_OUTPUT --\n\n"
+                "VALUE_OUTPUT",
+        ),
+        (
+                {
+                    "exception": data.PropertyAccessError("Test error"),
+                    "query": "QUERY_OUTPUT",
+                },
+                "-- PropertyAccessResponse from QUERY_OUTPUT --\n\n"
+                "Exception occurred: Test error",
+        ),
+    ],
+)
+def test_response_str(kwargs, expected_str):
+    resp = data.PropertyAccessResponse(**kwargs)
+    assert str(resp) == expected_str
