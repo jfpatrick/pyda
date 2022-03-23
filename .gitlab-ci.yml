@@ -33,3 +33,14 @@ build_docs:
 # A release build of the documentation, made available through cern.ch/acc-py.
 build_docs_on_tag:
   extends: .acc_py_build_docs_on_tag
+
+
+pre-commit:
+  extends: .acc_py_base
+  stage: build
+  before_script:
+    - python -m pip install pre-commit
+  script:
+    # Run pre-commit on the changes. If in MR form, we run for all commits in the MR,
+    # otherwise just on the last commit.
+    - pre-commit run --from-ref ${CI_MERGE_REQUEST_DIFF_BASE_SHA:-HEAD~1} --to-ref ${CI_COMMIT_SHA}
