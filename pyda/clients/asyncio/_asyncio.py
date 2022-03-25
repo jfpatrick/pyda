@@ -7,7 +7,7 @@ from ..core import BaseClient, BaseSubscription, BaseSubscriptionPool
 if typing.TYPE_CHECKING:
     from ...data import PropertyAccessResponse
     from ...providers._core import BasePropertyStream
-    from ..core._core import SelectorArg
+    from ..core._core import SelectorArgumentType
 
 
 class AsyncIOSubscription(BaseSubscription):
@@ -74,7 +74,7 @@ class AsyncIOClient(BaseClient):
             *,
             device: str,
             prop: str,
-            selector: "SelectorArg" = Selector(''),
+            selector: "SelectorArgumentType" = Selector(''),
     ) -> "PropertyAccessResponse":
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
@@ -86,7 +86,7 @@ class AsyncIOClient(BaseClient):
             *,
             device: str,
             prop: str,
-            selector: "SelectorArg" = Selector(''),
+            selector: "SelectorArgumentType" = Selector(''),
     ) -> AsyncIOSubscription:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)

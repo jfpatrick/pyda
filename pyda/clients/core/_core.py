@@ -7,7 +7,7 @@ if typing.TYPE_CHECKING:
     from ...providers._core import BasePropertyStream, BaseProvider
     from ...providers._middleware import StreamMiddleware
 
-    SelectorArg = typing.Union[str, Selector]
+    SelectorArgumentType = typing.Union[str, Selector]
 
 
 class BaseSubscription:
@@ -66,7 +66,7 @@ class BaseClient:
             *,
             device: str,
             prop: str,
-            selector: "SelectorArg" = Selector(''),
+            selector: "SelectorArgumentType" = Selector(''),
     ) -> BaseSubscription:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
@@ -85,7 +85,7 @@ class BaseClient:
             data_stream = middleware.wrap_stream(data_stream)
         return data_stream
 
-    def _ensure_selector(self, selector: "SelectorArg") -> Selector:
+    def _ensure_selector(self, selector: "SelectorArgumentType") -> Selector:
         if not isinstance(selector, Selector):
             return Selector(selector)
         return selector

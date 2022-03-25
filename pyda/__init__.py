@@ -4,8 +4,6 @@ Documentation for the pyda package
 """
 
 from ._version import version as __version__  # noqa
-
-
 from .clients.asyncio._asyncio import AsyncIOClient
 from .clients.callback._callback import CallbackClient
 from .clients.simple._simple import SimpleClient

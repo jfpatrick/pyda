@@ -8,7 +8,7 @@ from ..core import BaseClient, BaseSubscription
 if typing.TYPE_CHECKING:
     from ...data import PropertyAccessResponse
     from ...providers._core import BasePropertyStream
-    from ..core._core import SelectorArg
+    from ..core._core import SelectorArgumentType
 
 
 Callback = typing.Callable[["PropertyAccessResponse"], None]
@@ -44,7 +44,7 @@ class CallbackClient(BaseClient):
             device: str,
             prop: str,
             callback: Callback,
-            selector: "SelectorArg" = Selector(''),
+            selector: "SelectorArgumentType" = Selector(''),
     ):
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
@@ -61,7 +61,7 @@ class CallbackClient(BaseClient):
             device: str,
             prop: str,
             callback: Callback,
-            selector: "SelectorArg" = Selector(''),
+            selector: "SelectorArgumentType" = Selector(''),
     ) -> CallbackSubscription:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
