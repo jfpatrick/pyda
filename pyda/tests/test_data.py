@@ -143,3 +143,59 @@ def test_header_set_stamp(context, expected_stamp):
 def test_header_cycle_stamp(context, expected_stamp):
     header = data.Header(context)
     assert header.cycle_timestamp == expected_stamp
+
+
+@pytest.mark.parametrize("value", ["TEST.USER.ALL", ""])
+def test_Selector_str(value):
+    sel = data.Selector(value)
+    assert str(sel) == value
+
+
+@pytest.mark.parametrize(
+    "arg,expected_output", [
+        ("TEST.USER.ALL", 'Selector("TEST.USER.ALL")'),
+        ("", 'Selector("")'),
+    ],
+)
+def test_Selector_repr(arg, expected_output):
+    sel = data.Selector(arg)
+    assert repr(sel) == expected_output
+
+
+@pytest.mark.parametrize(
+    "obj1,obj2,expect_equal", [
+        (
+            data.Selector("DOM1.GR1.VAL1"),
+            None,
+            False,
+        ),
+        (
+            data.Selector("DOM1.GR1.VAL1"),
+            "DOM1.GR1.VAL1",
+            False,
+        ),
+        (
+            data.Selector("DOM1.GR1.VAL1"),
+            data.Selector("DOM2.GR1.VAL1"),
+            False,
+        ),
+        (
+            data.Selector("DOM1.GR1.VAL1"),
+            data.Selector("DOM1.GR1.VAL1"),
+            True,
+        ),
+        (
+            data.Selector(""),
+            "",
+            False,
+        ),
+        (
+            data.Selector(""),
+            data.Selector(""),
+            True,
+        ),
+    ],
+)
+def test_Selector_eq(obj1, obj2, expect_equal):
+    assert (obj1 == obj2) == expect_equal
+    assert (obj1 != obj2) != expect_equal
