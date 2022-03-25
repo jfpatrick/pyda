@@ -84,10 +84,13 @@ def test_header_cycle_time(datetime_from_ns, context, expected_conversion_arg):
     "context,expected_sel", [
         (
                 pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX'),
-                'MULTIPLEXED.SETTINGS.CTX',
+                data.Selector('MULTIPLEXED.SETTINGS.CTX'),
         ),
         (pyds_model.SettingContext(), None),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 0), 'CYCLEBOUND.ACQ.CTX'),
+        (
+                pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 0),
+                data.Selector('CYCLEBOUND.ACQ.CTX'),
+        ),
         (pyds_model.AcquisitionContext(), None),
     ],
 )
