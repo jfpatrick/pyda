@@ -1,5 +1,6 @@
 import queue
 import typing
+
 from .. import core
 from ... import data
 

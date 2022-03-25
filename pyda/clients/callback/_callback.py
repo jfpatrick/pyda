@@ -1,8 +1,9 @@
 import concurrent.futures
 import typing
 import weakref
-from ... import data
+
 from .. import core
+from ... import data
 
 if typing.TYPE_CHECKING:
     from ...data import PropertyAccessResponse

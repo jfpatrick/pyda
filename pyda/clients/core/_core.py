@@ -1,4 +1,5 @@
 import typing
+
 from ... import data
 
 if typing.TYPE_CHECKING:
