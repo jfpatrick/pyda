@@ -32,8 +32,11 @@ class Header:
         self._context = context
 
     @property
-    def selector(self) -> typing.Optional[str]:
-        return getattr(self._context, 'selector', None)
+    def selector(self) -> typing.Optional[Selector]:
+        selector = getattr(self._context, 'selector', None)
+        if isinstance(selector, str):
+            return Selector(selector)
+        return selector
 
     @property
     def acquisition_timestamp(self) -> float:
@@ -93,7 +96,7 @@ class PropertyAccessError(Exception):
 class PropertyAccessQuery:
     device: str
     prop: str
-    selector: str
+    selector: Selector
     data_filters: typing.Mapping[str, typing.Any] = dataclasses.field(default_factory=dict)
 
     def __str__(self):
