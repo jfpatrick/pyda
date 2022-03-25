@@ -63,7 +63,7 @@ from pyda.clients import callback
         ),
     ],
 )
-def test_simple_client_get(kwargs, dummy_provider, expected_query_args):
+def test__CallbackClient__get(kwargs, dummy_provider, expected_query_args):
     cli = pyda.CallbackClient(provider=dummy_provider)
     cli.get(**kwargs, callback=mock.Mock())
     dummy_provider._get_property.assert_called_once_with(
@@ -127,7 +127,7 @@ def test_simple_client_get(kwargs, dummy_provider, expected_query_args):
         ),
     ],
 )
-def test_simple_client_subscribe(kwargs, dummy_provider, expected_query_args):
+def test__CallbackClient__subscribe(kwargs, dummy_provider, expected_query_args):
     cli = pyda.CallbackClient(provider=dummy_provider)
     sub = cli.subscribe(**kwargs, callback=mock.Mock())
     dummy_provider._create_property_stream.assert_called_once_with(
