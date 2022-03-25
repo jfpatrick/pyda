@@ -1,8 +1,8 @@
 import asyncio
 import typing
 
-from ...data import Selector
-from ..core import BaseClient, BaseSubscription, BaseSubscriptionPool
+from ... import data
+from .. import core
 
 if typing.TYPE_CHECKING:
     from ...data import PropertyAccessResponse
@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     from ..core._core import SelectorArgumentType
 
 
-class AsyncIOSubscription(BaseSubscription):
+class AsyncIOSubscription(core.BaseSubscription):
     def __init__(self, property_stream: "BasePropertyStream", loop: asyncio.AbstractEventLoop):
         self._q: asyncio.Queue = asyncio.Queue()
         self._enabled_queues: typing.List[asyncio.Queue] = []
@@ -39,7 +39,7 @@ class AsyncIOSubscription(BaseSubscription):
         return resp
 
 
-class AsyncIOSubscriptionPool(BaseSubscriptionPool):
+class AsyncIOSubscriptionPool(core.BaseSubscriptionPool):
     def __init__(self):
         super().__init__()
         self._q: asyncio.Queue = asyncio.Queue()
@@ -63,7 +63,7 @@ class AsyncIOSubscriptionPool(BaseSubscriptionPool):
         return resp
 
 
-class AsyncIOClient(BaseClient):
+class AsyncIOClient(core.BaseClient):
     def __init__(self, *, provider):
         super().__init__(provider=provider)
         # TODO: Simplify by injecting the type into the base client.
@@ -74,7 +74,7 @@ class AsyncIOClient(BaseClient):
             *,
             device: str,
             prop: str,
-            selector: "SelectorArgumentType" = Selector(''),
+            selector: "SelectorArgumentType" = data.Selector(''),
     ) -> "PropertyAccessResponse":
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
@@ -86,7 +86,7 @@ class AsyncIOClient(BaseClient):
             *,
             device: str,
             prop: str,
-            selector: "SelectorArgumentType" = Selector(''),
+            selector: "SelectorArgumentType" = data.Selector(''),
     ) -> AsyncIOSubscription:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)

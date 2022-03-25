@@ -1,8 +1,7 @@
 import queue
 import typing
-
-from ...data import Selector
-from ..core import BaseClient, BaseSubscription, BaseSubscriptionPool
+from .. import core
+from ... import data
 
 if typing.TYPE_CHECKING:
     from ...data import PropertyAccessResponse
@@ -10,7 +9,7 @@ if typing.TYPE_CHECKING:
     from ..core._core import SelectorArgumentType
 
 
-class SimpleSubscription(BaseSubscription):
+class SimpleSubscription(core.BaseSubscription):
     def __init__(
             self,
             property_stream: "BasePropertyStream",
@@ -39,7 +38,7 @@ class SimpleSubscription(BaseSubscription):
         return response
 
 
-class SimpleSubscriptionPool(BaseSubscriptionPool):
+class SimpleSubscriptionPool(core.BaseSubscriptionPool):
     def __init__(self):
         super().__init__()
         self._q = queue.Queue()
@@ -62,7 +61,7 @@ class SimpleSubscriptionPool(BaseSubscriptionPool):
         return resp
 
 
-class SimpleClient(BaseClient):
+class SimpleClient(core.BaseClient):
     def __init__(self, *, provider):
         super().__init__(provider=provider)
         # TODO: Simplify by injecting the type into the base client.
@@ -73,7 +72,7 @@ class SimpleClient(BaseClient):
             *,
             device: str,
             prop: str,
-            selector: "SelectorArgumentType" = Selector(''),
+            selector: "SelectorArgumentType" = data.Selector(''),
     ) -> "PropertyAccessResponse":
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
@@ -85,7 +84,7 @@ class SimpleClient(BaseClient):
             *,
             device: str,
             prop: str,
-            selector: "SelectorArgumentType" = Selector(''),
+            selector: "SelectorArgumentType" = data.Selector(''),
     ) -> SimpleSubscription:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)

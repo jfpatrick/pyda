@@ -1,9 +1,8 @@
 import concurrent.futures
 import typing
 import weakref
-
-from ...data import Selector
-from ..core import BaseClient, BaseSubscription
+from ... import data
+from .. import core
 
 if typing.TYPE_CHECKING:
     from ...data import PropertyAccessResponse
@@ -14,7 +13,7 @@ if typing.TYPE_CHECKING:
 Callback = typing.Callable[["PropertyAccessResponse"], None]
 
 
-class CallbackSubscription(BaseSubscription):
+class CallbackSubscription(core.BaseSubscription):
     def __init__(
             self, property_stream: "BasePropertyStream",
             client: "CallbackClient",
@@ -31,7 +30,7 @@ class CallbackSubscription(BaseSubscription):
             cli._pool.submit(self._callback, response)
 
 
-class CallbackClient(BaseClient):
+class CallbackClient(core.BaseClient):
     def __init__(self, *, provider):
         super().__init__(provider=provider)
         # The thread-pool in which callbacks are run. By default, we have just one worker in the
@@ -44,7 +43,7 @@ class CallbackClient(BaseClient):
             device: str,
             prop: str,
             callback: Callback,
-            selector: "SelectorArgumentType" = Selector(''),
+            selector: "SelectorArgumentType" = data.Selector(''),
     ):
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
@@ -61,7 +60,7 @@ class CallbackClient(BaseClient):
             device: str,
             prop: str,
             callback: Callback,
-            selector: "SelectorArgumentType" = Selector(''),
+            selector: "SelectorArgumentType" = data.Selector(''),
     ) -> CallbackSubscription:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)

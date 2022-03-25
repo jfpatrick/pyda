@@ -1,13 +1,12 @@
 import typing
-
-from ...data import PropertyAccessQuery, Selector
+from ... import data
 
 if typing.TYPE_CHECKING:
     from ...data import PropertyAccessResponse
     from ...providers._core import BasePropertyStream, BaseProvider
     from ...providers._middleware import StreamMiddleware
 
-    SelectorArgumentType = typing.Union[str, Selector]
+    SelectorArgumentType = typing.Union[str, data.Selector]
 
 
 class BaseSubscription:
@@ -66,7 +65,7 @@ class BaseClient:
             *,
             device: str,
             prop: str,
-            selector: "SelectorArgumentType" = Selector(''),
+            selector: "SelectorArgumentType" = data.Selector(''),
     ) -> BaseSubscription:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
@@ -79,15 +78,15 @@ class BaseClient:
     def provider(self) -> "BaseProvider":
         return self._provider
 
-    def _create_property_stream(self, query: PropertyAccessQuery) -> "BasePropertyStream":
+    def _create_property_stream(self, query: data.PropertyAccessQuery) -> "BasePropertyStream":
         data_stream = self.provider._create_property_stream(query)
         for middleware in self._stream_middlewares:
             data_stream = middleware.wrap_stream(data_stream)
         return data_stream
 
-    def _ensure_selector(self, selector: "SelectorArgumentType") -> Selector:
-        if not isinstance(selector, Selector):
-            return Selector(selector)
+    def _ensure_selector(self, selector: "SelectorArgumentType") -> data.Selector:
+        if not isinstance(selector, data.Selector):
+            return data.Selector(selector)
         return selector
 
     def _build_subscription(self, stream: "BasePropertyStream"):
@@ -97,7 +96,7 @@ class BaseClient:
             self,
             device: str,
             prop: str,
-            selector: Selector,
-    ) -> PropertyAccessQuery:
+            selector: data.Selector,
+    ) -> data.PropertyAccessQuery:
         # TODO: Expose the data_filters argument, when supported by public API
-        return PropertyAccessQuery(device=device, prop=prop, selector=selector)
+        return data.PropertyAccessQuery(device=device, prop=prop, selector=selector)
