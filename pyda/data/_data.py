@@ -76,13 +76,44 @@ def datetime_from_ns(timestamp: float) -> datetime.datetime:
     return dt
 
 
-@dataclasses.dataclass(frozen=True)
 class AcquiredPropertyData:
     # Known as AcquiredParameterValue in UCAP
-    header: Header
 
-    def __getitem__(self, item):
-        return 'some-value'
+    def __init__(self, dtv: pyds_model.DataTypeValue, header: Header):
+        # TODO: Ensure we proxy all of the appropriate methods from DTV.
+        self._dtv = dtv
+        self._header = header
+
+    def __getitem__(self, key):
+        # TODO: If a numpy type, make it read-only.
+        return self._dtv[key]
+
+    def __contains__(self, key):
+        return key in self._dtv
+
+    def get(self, key: str, default: typing.Optional[typing.Any] = None):
+        return self._dtv.get(key, default)
+
+    def keys(self) -> typing.Iterable[typing.Any]:
+        return self._dtv.keys()
+
+    def values(self) -> typing.Iterable[typing.Any]:
+        return self._dtv.values()
+
+    def items(self) -> typing.Iterable[typing.Tuple[typing.Any, typing.Any]]:
+        return self._dtv.items()
+
+    @property
+    def header(self) -> Header:
+        return self._header
+
+    @property
+    def data_type(self) -> pyds_model.DataType:
+        # TODO: This should be immutable.
+        return self._dtv.data_type
+
+    def mutable_data(self) -> typing.Dict[str, typing.Any]:
+        return {k: v for k, v in self.items()}
 
 
 class PropertyAccessError(Exception):
@@ -114,6 +145,7 @@ class PropertyAccessResponse:
     def __init__(
             self,
             query: PropertyAccessQuery,
+            notification_type: typing.Optional[str] = None,
             value: typing.Optional[AcquiredPropertyData] = None,
             exception: typing.Optional[PropertyAccessError] = None,
     ):
@@ -121,7 +153,9 @@ class PropertyAccessResponse:
         self._value = value
         self._exception = exception
         self._query = query
-        assert value or exception
+        self._notification_type = notification_type
+        assert (value is None) != (exception is None), \
+            '"value" and "exception" are mutually exclusive arguments'
 
     @property
     def value(self) -> AcquiredPropertyData:
@@ -138,19 +172,14 @@ class PropertyAccessResponse:
     def query(self) -> PropertyAccessQuery:
         return self._query
 
+    @property
+    def notification_type(self) -> typing.Optional[str]:
+        return self._notification_type
+
     def __str__(self):
         val = f"-- {self.__class__.__qualname__} from {self.query} --\n\n"
         try:
             val += str(self.value)
         except PropertyAccessError as e:
             val += f"Exception occurred: {e}"
-        return val
-
-    def __repr__(self):
-        val = self.__class__.__qualname__ + f'(query="{self.query}", '
-        try:
-            val += f"value={self.value}"
-        except PropertyAccessError as e:
-            val += f"exception={repr(e)}"
-        val += ")"
         return val
