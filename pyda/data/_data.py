@@ -19,7 +19,7 @@ class Header:
 
     @property
     def acquisition_timestamp(self) -> float:
-        return self._context.acq_stamp
+        return self._context.acquisition_stamp
 
     def acquisition_time(self) -> datetime.datetime:
         return datetime_from_ns(self.acquisition_timestamp)
