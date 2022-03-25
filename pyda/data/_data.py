@@ -7,6 +7,24 @@ import typing
 import pyds_model
 
 
+class Selector:
+
+    def __init__(self, value: str):
+        self._value = value
+
+    def __bool__(self):
+        return bool(self._value)
+
+    def __eq__(self, other):
+        return type(self) is type(other) and str(self) == str(other)
+
+    def __str__(self):
+        return self._value
+
+    def __repr__(self):
+        return f'{self.__class__.__qualname__}("{self._value}")'
+
+
 class Header:
 
     def __init__(self, context: pyds_model.AnyContext):
