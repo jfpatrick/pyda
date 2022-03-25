@@ -30,11 +30,13 @@ def test_datetime_from_ns(ns, expected_datetime_args):
     ],
 )
 @mock.patch('pyda.data._data.datetime_from_ns')
-def test_header_acq_time(datetime_from_ns, context_type, context_args, expected_conversion_arg):
+def test_header_acquisition_time(
+        datetime_from_ns, context_type, context_args, expected_conversion_arg,
+):
     context = context_type(*context_args)
     header = data.Header(context)
     datetime_from_ns.assert_not_called()
-    result = header.acq_time()
+    result = header.acquisition_time()
     datetime_from_ns.assert_called_once_with(expected_conversion_arg)
     assert result is datetime_from_ns.return_value
 
@@ -111,10 +113,10 @@ def test_header_selector(context_type, context_args, expected_sel):
         (pyds_model.AcquisitionContext, [300], 300),
     ],
 )
-def test_header_acq_stamp(context_type, context_args, expected_stamp):
+def test_header_acquisition_stamp(context_type, context_args, expected_stamp):
     context = context_type(*context_args)
     header = data.Header(context)
-    assert header.acq_timestamp == expected_stamp
+    assert header.acquisition_timestamp == expected_stamp
 
 
 @pytest.mark.parametrize(

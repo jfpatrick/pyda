@@ -18,11 +18,11 @@ class Header:
         return getattr(self._context, 'selector', None)
 
     @property
-    def acq_timestamp(self) -> float:
+    def acquisition_timestamp(self) -> float:
         return self._context.acq_stamp
 
-    def acq_time(self) -> datetime.datetime:
-        return datetime_from_ns(self.acq_timestamp)
+    def acquisition_time(self) -> datetime.datetime:
+        return datetime_from_ns(self.acquisition_timestamp)
 
     @property
     def set_timestamp(self) -> typing.Optional[float]:
