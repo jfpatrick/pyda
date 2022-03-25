@@ -1,9 +1,12 @@
 import datetime
 from datetime import timezone
+from unittest import mock
 
+import pyds_model
 import pytest
 
 from pyda import data
+from pyda.data import _data
 
 
 @pytest.mark.parametrize(
@@ -13,20 +16,138 @@ from pyda import data
         (1391456625628407589, (2014, 2, 3, 19, 43, 45, 628408, timezone.utc)),
     ],
 )
-def test_header_acq_time(ns, expected_datetime_args):
-    header = data.Header(acq_timestamp=ns)
-    acq_time = header.acq_time()
-    assert acq_time == datetime.datetime(*expected_datetime_args)
+def test_datetime_from_ns(ns, expected_datetime_args):
+    actual_time = _data.datetime_from_ns(ns)
+    assert actual_time == datetime.datetime(*expected_datetime_args)
 
 
 @pytest.mark.parametrize(
-    "ns,expected_datetime_args", [
-        (1456698342000000000, (2016, 2, 28, 22, 25, 42, 0, timezone.utc)),
-        (1456698342743902000, (2016, 2, 28, 22, 25, 42, 743902, timezone.utc)),
-        (1391456625628407589, (2014, 2, 3, 19, 43, 45, 628408, timezone.utc)),
+    "context_type,context_args,expected_conversion_arg", [
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX', 100, 200], 200),
+        (pyds_model.SettingContext, [100, 200], 200),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 100, 200], 200),
+        (pyds_model.AcquisitionContext, [100], 100),
     ],
 )
-def test_header_set_time(ns, expected_datetime_args):
-    header = data.Header(set_timestamp=ns)
-    set_time = header.set_time()
-    assert set_time == datetime.datetime(*expected_datetime_args)
+@mock.patch('pyda.data._data.datetime_from_ns')
+def test_header_acq_time(datetime_from_ns, context_type, context_args, expected_conversion_arg):
+    context = context_type(*context_args)
+    header = data.Header(context)
+    datetime_from_ns.assert_not_called()
+    result = header.acq_time()
+    datetime_from_ns.assert_called_once_with(expected_conversion_arg)
+    assert result is datetime_from_ns.return_value
+
+
+@pytest.mark.parametrize(
+    "context_type,context_args,expected_conversion_arg", [
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX', 100], 100),
+        (pyds_model.SettingContext, [100], 100),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 100], None),
+        (pyds_model.AcquisitionContext, [], None),
+    ],
+)
+@mock.patch('pyda.data._data.datetime_from_ns')
+def test_header_set_time(datetime_from_ns, context_type, context_args, expected_conversion_arg):
+    context = context_type(*context_args)
+    header = data.Header(context)
+    datetime_from_ns.assert_not_called()
+    result = header.set_time()
+    if expected_conversion_arg is None:
+        datetime_from_ns.assert_not_called()
+        assert result is None
+    else:
+        datetime_from_ns.assert_called_once_with(expected_conversion_arg)
+        assert result is datetime_from_ns.return_value
+
+
+@pytest.mark.parametrize(
+    "context_type,context_args,expected_conversion_arg", [
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX'], None),
+        (pyds_model.SettingContext, [], None),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 100], 100),
+        (pyds_model.AcquisitionContext, [], None),
+    ],
+)
+@mock.patch('pyda.data._data.datetime_from_ns')
+def test_header_cycle_time(datetime_from_ns, context_type, context_args, expected_conversion_arg):
+    context = context_type(*context_args)
+    header = data.Header(context)
+    datetime_from_ns.assert_not_called()
+    result = header.cycle_time()
+    if expected_conversion_arg is None:
+        datetime_from_ns.assert_not_called()
+        assert result is None
+    else:
+        datetime_from_ns.assert_called_once_with(expected_conversion_arg)
+        assert result is datetime_from_ns.return_value
+
+
+@pytest.mark.parametrize(
+    "context_type,context_args,expected_sel", [
+        (
+                pyds_model.MultiplexedSettingContext,
+                ['MULTIPLEXED.SETTINGS.CTX'],
+                'MULTIPLEXED.SETTINGS.CTX',
+        ),
+        (pyds_model.SettingContext, [], None),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 0], 'CYCLEBOUND.ACQ.CTX'),
+        (pyds_model.AcquisitionContext, [], None),
+    ],
+)
+def test_header_selector(context_type, context_args, expected_sel):
+    context = context_type(*context_args)
+    header = data.Header(context)
+    assert header.selector == expected_sel
+
+
+@pytest.mark.parametrize(
+    "context_type,context_args,expected_stamp", [
+        # We're not using default (0) value for the stamp argument,
+        # because DSF will produce current time
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX', 0, 100], 100),
+        (pyds_model.SettingContext, [0, 100], 100),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 0, 200], 200),
+        (pyds_model.AcquisitionContext, [300], 300),
+    ],
+)
+def test_header_acq_stamp(context_type, context_args, expected_stamp):
+    context = context_type(*context_args)
+    header = data.Header(context)
+    assert header.acq_timestamp == expected_stamp
+
+
+@pytest.mark.parametrize(
+    "context_type,context_args,expected_stamp", [
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX'], 0),
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX', 100], 100),
+        (pyds_model.SettingContext, [], 0),
+        (pyds_model.SettingContext, [100], 100),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 0], None),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 0, 200], None),
+        (pyds_model.AcquisitionContext, [], None),
+        (pyds_model.AcquisitionContext, [300], None),
+    ],
+)
+def test_header_set_stamp(context_type, context_args, expected_stamp):
+    context = context_type(*context_args)
+    header = data.Header(context)
+    assert header.set_timestamp == expected_stamp
+
+
+@pytest.mark.parametrize(
+    "context_type,context_args,expected_stamp", [
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX'], None),
+        (pyds_model.MultiplexedSettingContext, ['MULTIPLEXED.SETTINGS.CTX', 100], None),
+        (pyds_model.SettingContext, [], None),
+        (pyds_model.SettingContext, [100], None),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 0], 0),
+        (pyds_model.CycleBoundAcquisitionContext, ['CYCLEBOUND.ACQ.CTX', 200], 200),
+        (pyds_model.AcquisitionContext, [], None),
+        (pyds_model.AcquisitionContext, [300], None),
+    ],
+)
+def test_header_cycle_stamp(context_type, context_args, expected_stamp):
+    context = context_type(*context_args)
+    header = data.Header(context)
+    assert header.cycle_timestamp == expected_stamp

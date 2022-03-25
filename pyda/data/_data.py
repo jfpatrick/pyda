@@ -4,30 +4,55 @@ from datetime import timezone
 import json
 import typing
 
+import pyds_model
 
-@dataclasses.dataclass(frozen=True)
+
 class Header:
-    acq_timestamp: typing.Optional[float] = None
-    set_timestamp: typing.Optional[float] = None
-    selector: str = ''
 
-    def acq_time(self) -> typing.Optional[datetime.datetime]:
-        return self._create_datetime(self.acq_timestamp)
+    def __init__(self, context: pyds_model.AnyContext):
+        super().__init__()
+        self._context = context
+
+    @property
+    def selector(self) -> typing.Optional[str]:
+        return getattr(self._context, 'selector', None)
+
+    @property
+    def acq_timestamp(self) -> float:
+        return self._context.acq_stamp
+
+    def acq_time(self) -> datetime.datetime:
+        return datetime_from_ns(self.acq_timestamp)
+
+    @property
+    def set_timestamp(self) -> typing.Optional[float]:
+        return getattr(self._context, 'set_stamp', None)
 
     def set_time(self) -> typing.Optional[datetime.datetime]:
-        return self._create_datetime(self.set_timestamp)
+        timestamp = self.set_timestamp
+        return (
+            datetime_from_ns(timestamp)
+            if timestamp is not None else None
+        )
 
-    def _create_datetime(
-            self,
-            timestamp: typing.Optional[float],
-    ) -> typing.Optional[datetime.datetime]:
-        if timestamp is None:
-            return None
-        sec = timestamp / 1e9
-        us = round((timestamp / 1e3) % 1e6)
-        dt = datetime.datetime.fromtimestamp(sec, tz=timezone.utc)
-        dt = dt.replace(microsecond=us)
-        return dt
+    @property
+    def cycle_timestamp(self) -> typing.Optional[float]:
+        return getattr(self._context, 'cycle_stamp', None)
+
+    def cycle_time(self) -> typing.Optional[datetime.datetime]:
+        timestamp = self.cycle_timestamp
+        return (
+            datetime_from_ns(timestamp)
+            if timestamp is not None else None
+        )
+
+
+def datetime_from_ns(timestamp: float) -> datetime.datetime:
+    sec = timestamp / 1e9
+    us = round((timestamp / 1e3) % 1e6)
+    dt = datetime.datetime.fromtimestamp(sec, tz=timezone.utc)
+    dt = dt.replace(microsecond=us)
+    return dt
 
 
 @dataclasses.dataclass(frozen=True)
