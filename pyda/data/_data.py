@@ -139,7 +139,7 @@ class PropertyAccessQuery:
         return val
 
 
-class PropertyAccessResponse:
+class PropertyRetrievalResponse:
     # Known as FailSafeParameterValue in UCAP
 
     def __init__(

@@ -3,16 +3,16 @@ from ._data import (
     Header,
     PropertyAccessError,
     PropertyAccessQuery,
-    PropertyAccessResponse,
+    PropertyRetrievalResponse,
     PropertyUpdateResponse,
-    UpdateHeader,
     Selector,
+    UpdateHeader,
 )
 
 AcquiredPropertyData.__module__ = __name__
 PropertyAccessError.__module__ = __name__
 PropertyAccessQuery.__module__ = __name__
-PropertyAccessResponse.__module__ = __name__
+PropertyRetrievalResponse.__module__ = __name__
 PropertyUpdateResponse.__module__ = __name__
 UpdateHeader.__module__ = __name__
 Header.__module__ = __name__

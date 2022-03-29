@@ -5,12 +5,12 @@ import weakref
 import typing_extensions
 
 if typing.TYPE_CHECKING:
-    from ..data import PropertyAccessQuery, PropertyAccessResponse
+    from ..data import PropertyAccessQuery, PropertyRetrievalResponse
 
 
 class StreamResponseHandlerProtocol(typing_extensions.Protocol):
     # Note that PropertyStream and client.Subscription are both stream handlers.
-    def _response_received(self, response: "PropertyAccessResponse"):
+    def _response_received(self, response: "PropertyRetrievalResponse"):
         pass
 
 
@@ -26,11 +26,11 @@ class BasePropertyStream:
     def _register_stream_handler(self, subs):
         self._stream_handlers.add(subs)
 
-    def _response_received(self, response: "PropertyAccessResponse") -> None:
+    def _response_received(self, response: "PropertyRetrievalResponse") -> None:
         # Called by the provider sources when a response is received.
         self._broadcast_response(response)
 
-    def _broadcast_response(self, response: "PropertyAccessResponse"):
+    def _broadcast_response(self, response: "PropertyRetrievalResponse"):
         for stream_handler in self._stream_handlers:
             stream_handler._response_received(response)
 

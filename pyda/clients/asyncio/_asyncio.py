@@ -5,7 +5,7 @@ from .. import core
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyAccessResponse
+    from ...data import PropertyRetrievalResponse
     from ...providers._core import BasePropertyStream
     from ..core._core import SelectorArgumentType
 
@@ -17,7 +17,7 @@ class AsyncIOSubscription(core.BaseSubscription):
         self._loop = loop
         super().__init__(property_stream)
 
-    def subs_response_received(self, response: "PropertyAccessResponse"):
+    def subs_response_received(self, response: "PropertyRetrievalResponse"):
         for queue in self._enabled_queues:
             # TODO: Do we need to hold on to a reference to this future?
             asyncio.run_coroutine_threadsafe(queue.put(response), loop=self._loop)
@@ -32,7 +32,7 @@ class AsyncIOSubscription(core.BaseSubscription):
         # TODO: Check that the pool is doing this inside a managed context.
         return self
 
-    async def __anext__(self) -> "PropertyAccessResponse":
+    async def __anext__(self) -> "PropertyRetrievalResponse":
         resp = await self._q.get()
         # TODO: Is it possible that multiple iterations are taking place?
         self._q.task_done()
@@ -75,7 +75,7 @@ class AsyncIOClient(core.BaseClient):
             device: str,
             prop: str,
             selector: "SelectorArgumentType" = data.Selector(''),
-    ) -> "PropertyAccessResponse":
+    ) -> "PropertyRetrievalResponse":
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
         future = self.provider._get_property(query)

@@ -209,7 +209,7 @@ def test_response_init_fails():
         AssertionError, match='"value" and "exception" '
         'are mutually exclusive arguments',
     ):
-        data.PropertyAccessResponse(
+        data.PropertyRetrievalResponse(
             query=mock.MagicMock(),
             value=mock.MagicMock(),
             exception=data.PropertyAccessError("Test error"),
@@ -218,7 +218,7 @@ def test_response_init_fails():
 
 def test_response_value_succeeds():
     val = mock.MagicMock()
-    resp = data.PropertyAccessResponse(
+    resp = data.PropertyRetrievalResponse(
         query=mock.MagicMock(),
         value=val,
     )
@@ -227,7 +227,7 @@ def test_response_value_succeeds():
 
 def test_response_value_fails():
     exc = data.PropertyAccessError("Test error")
-    resp = data.PropertyAccessResponse(
+    resp = data.PropertyRetrievalResponse(
         query=mock.MagicMock(),
         exception=exc,
     )
@@ -240,7 +240,7 @@ def test_response_value_fails():
     "kwargs,expected_str", [
         (
                 {"value": "VALUE_OUTPUT", "query": "QUERY_OUTPUT"},
-                "-- PropertyAccessResponse from QUERY_OUTPUT --\n\n"
+                "-- PropertyRetrievalResponse from QUERY_OUTPUT --\n\n"
                 "VALUE_OUTPUT",
         ),
         (
@@ -248,11 +248,11 @@ def test_response_value_fails():
                     "exception": data.PropertyAccessError("Test error"),
                     "query": "QUERY_OUTPUT",
                 },
-                "-- PropertyAccessResponse from QUERY_OUTPUT --\n\n"
+                "-- PropertyRetrievalResponse from QUERY_OUTPUT --\n\n"
                 "Exception occurred: Test error",
         ),
     ],
 )
 def test_response_str(kwargs, expected_str):
-    resp = data.PropertyAccessResponse(**kwargs)
+    resp = data.PropertyRetrievalResponse(**kwargs)
     assert str(resp) == expected_str
