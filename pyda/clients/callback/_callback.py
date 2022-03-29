@@ -6,19 +6,20 @@ from .. import core
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyRetrievalResponse
+    from ...data import PropertyRetrievalResponse, PropertyUpdateResponse
     from ...providers._core import BasePropertyStream
     from ..core._core import SelectorArgumentType
 
 
-Callback = typing.Callable[["PropertyRetrievalResponse"], None]
+RetrievalCallback = typing.Callable[["PropertyRetrievalResponse"], None]
+UpdateCallback = typing.Callable[["PropertyUpdateResponse"], None]
 
 
 class CallbackSubscription(core.BaseSubscription):
     def __init__(
             self, property_stream: "BasePropertyStream",
             client: "CallbackClient",
-            callback: Callback,
+            callback: RetrievalCallback,
     ):
         self._cli = weakref.ref(client)
         self._callback = callback
@@ -43,7 +44,7 @@ class CallbackClient(core.BaseClient):
             *,
             device: str,
             prop: str,
-            callback: Callback,
+            callback: RetrievalCallback,
             selector: "SelectorArgumentType" = data.Selector(''),
     ) -> None:
         selector = self._ensure_selector(selector)
@@ -61,16 +62,12 @@ class CallbackClient(core.BaseClient):
             device: str,
             prop: str,
             value: typing.Any,
-            callback: typing.Optional[Callback] = None,
+            callback: UpdateCallback,
             selector: "SelectorArgumentType" = data.Selector(''),
     ) -> None:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
         future = self.provider._set_property(query, value)
-
-        if callback is None:
-            def callback(property_access: "PropertyAccessResponse") -> None:
-                return None
 
         def run_callback(future):
             self._pool.submit(callback, future.result())
@@ -82,7 +79,7 @@ class CallbackClient(core.BaseClient):
             *,
             device: str,
             prop: str,
-            callback: Callback,
+            callback: RetrievalCallback,
             selector: "SelectorArgumentType" = data.Selector(''),
     ) -> CallbackSubscription:
         selector = self._ensure_selector(selector)
