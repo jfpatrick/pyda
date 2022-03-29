@@ -46,10 +46,11 @@ async def test_asyncio_client__get(asyncio_client):
 
 @pytest.mark.asyncio
 async def test_asyncio_client__set(asyncio_client):
-    kwargs = {'device': 'some-device', 'prop': 'some-property'}
-    result = await asyncio_client.set(**kwargs, value="some-string")
+    result = await asyncio_client.set(
+        device='some-device', prop='some-property', value="some-string",
+    )
     assert result == {'some-header': {}}
-    result = await asyncio_client.get(**kwargs)
+    result = await asyncio_client.get(device='some-device', prop='some-property')
     assert result == {'param', 'some-string'}
 
 
@@ -62,14 +63,17 @@ def test_callback_client__get(callback_client):
 
 
 def test_callback_client__set(callback_client):
-    kwargs = {'device': 'some-device', 'prop': 'some-property'}
     callback = unittest.mock.Mock()
-    callback_client.set(**kwargs, value="some-string", callback=callback)
+    callback_client.set(
+        device='some-device', prop='some-property', value="some-string", callback=callback,
+    )
     callback.assert_not_called()
     time.sleep(0.3)
     callback.assert_called_once_with({'some-header': {}})
 
     callback = unittest.mock.Mock()
-    callback_client.get(**kwargs, callback=callback)
+    callback_client.get(
+        device='some-device', prop='some-property', callback=callback,
+    )
     time.sleep(0.3)
     callback.assert_called_once_with({'param', 'some-string'})

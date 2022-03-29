@@ -40,6 +40,7 @@ class CallbackPropertyStream(BasePropertyStream):
 class SomeCallbackProvider(BaseProvider):
     def __init__(self, *, interval: float = 0.25):
         super().__init__()
+        self._value = 42
         #: The interval for new subscriptions, and get/set responses. Does not
         #: affect existing subscriptions.
         self.interval = interval
@@ -48,9 +49,30 @@ class SomeCallbackProvider(BaseProvider):
         # A non-blocking get.
         future: concurrent.futures.Future = concurrent.futures.Future()
 
-        # Simulate a system which does callbacks by calling the get_data
+        def get_value():
+            future.set_result({'param', self._value})
+
+        # Simulate a system which does callbacks by calling the get_value
         # function after ``self.interval`` seconds.
-        t = threading.Timer(self.interval, future.set_result, args=({'param', 42},))
+        t = threading.Timer(self.interval, get_value)
+        t.start()
+        return future
+
+    def _set_property(
+            self,
+            query: "PropertyAccessQuery",
+            value: typing.Any,
+    ) -> concurrent.futures.Future:
+        # A non-blocking set.
+        future: concurrent.futures.Future = concurrent.futures.Future()
+
+        # Simulate a system which does callbacks by calling the set_value
+        # function after ``self.interval`` seconds.
+        def set_value():
+            self._value = value
+            future.set_result({'some-header': {}})
+
+        t = threading.Timer(self.interval, set_value)
         t.start()
         return future
 
