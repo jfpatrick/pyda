@@ -5,7 +5,7 @@ from .. import core
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyRetrievalResponse
+    from ...data import PropertyRetrievalResponse, PropertyUpdateResponse
     from ...providers._core import BasePropertyStream
     from ..core._core import SelectorArgumentType
 
@@ -88,7 +88,7 @@ class AsyncIOClient(core.BaseClient):
             prop: str,
             value: typing.Any,
             selector: "SelectorArgumentType" = data.Selector(''),
-    ) -> "PropertyAccessResponse":
+    ) -> "PropertyUpdateResponse":
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
         future = self.provider._set_property(query, value)
