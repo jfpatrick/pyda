@@ -139,7 +139,7 @@ class PropertyAccessQuery:
         return val
 
 
-class PropertyAccessResponse:
+class PropertyRetrievalResponse:
     # Known as FailSafeParameterValue in UCAP
 
     def __init__(
@@ -180,6 +180,57 @@ class PropertyAccessResponse:
         val = f"-- {self.__class__.__qualname__} from {self.query} --\n\n"
         try:
             val += str(self.value)
+        except PropertyAccessError as e:
+            val += f"Exception occurred: {e}"
+        return val
+
+
+class UpdateHeader:
+
+    def __init__(self, selector: Selector):
+        super().__init__()
+        self._selector = selector
+
+    @property
+    def selector(self) -> Selector:
+        return self._selector
+
+
+class PropertyUpdateResponse:
+    # Known as FailSafeParameterValue in UCAP
+
+    def __init__(
+            self,
+            query: PropertyAccessQuery,
+            header: typing.Optional[UpdateHeader] = None,
+            exception: typing.Optional[PropertyAccessError] = None,
+    ):
+        super().__init__()
+        self._header = header
+        self._exception = exception
+        self._query = query
+        assert (header is None) != (exception is None), \
+            '"header" and "exception" are mutually exclusive arguments'
+
+    @property
+    def header(self) -> UpdateHeader:
+        if self._exception:
+            raise self._exception
+        assert self._header is not None
+        return self._header
+
+    @property
+    def exception(self) -> typing.Optional[PropertyAccessError]:
+        return self._exception
+
+    @property
+    def query(self) -> PropertyAccessQuery:
+        return self._query
+
+    def __str__(self):
+        val = f"-- {self.__class__.__qualname__} from {self.query} --\n\n"
+        try:
+            val += str(self.header)
         except PropertyAccessError as e:
             val += f"Exception occurred: {e}"
         return val

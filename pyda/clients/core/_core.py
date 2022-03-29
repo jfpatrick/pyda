@@ -3,7 +3,7 @@ import typing
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyAccessResponse
+    from ...data import PropertyRetrievalResponse
     from ...providers._core import BasePropertyStream, BaseProvider
     from ...providers._middleware import StreamMiddleware
 
@@ -18,11 +18,11 @@ class BaseSubscription:
     def __init__(self, property_stream: "BasePropertyStream"):
         self._property_stream = property_stream
 
-    def _response_received(self, response: "PropertyAccessResponse"):
+    def _response_received(self, response: "PropertyRetrievalResponse"):
         # Dummy method for now to implement the StreamResponseHandlerProtocol protocol.
         return self.subs_response_received(response)
 
-    def subs_response_received(self, response: "PropertyAccessResponse"):
+    def subs_response_received(self, response: "PropertyRetrievalResponse"):
         # Called when the property stream has received data. For immediate
         # Subscription types (synchronous, callback, etc.) work may be done to
         # process the response in this method. Ideally it wouldn't block, but

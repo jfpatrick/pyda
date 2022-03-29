@@ -6,12 +6,12 @@ from .. import core
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyAccessResponse
+    from ...data import PropertyRetrievalResponse
     from ...providers._core import BasePropertyStream
     from ..core._core import SelectorArgumentType
 
 
-Callback = typing.Callable[["PropertyAccessResponse"], None]
+Callback = typing.Callable[["PropertyRetrievalResponse"], None]
 
 
 class CallbackSubscription(core.BaseSubscription):
@@ -24,7 +24,7 @@ class CallbackSubscription(core.BaseSubscription):
         self._callback = callback
         super().__init__(property_stream)
 
-    def subs_response_received(self, response: "PropertyAccessResponse"):
+    def subs_response_received(self, response: "PropertyRetrievalResponse"):
         cli = self._cli()
         if cli:
             # TODO: Do we need to hold on to a reference to this future?
