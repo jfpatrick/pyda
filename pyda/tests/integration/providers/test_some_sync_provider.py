@@ -8,27 +8,72 @@ from pyda import AsyncIOClient, CallbackClient, SimpleClient
 from .some_sync_provider import SomeSynchronousProvider
 
 
-def test_simple_client():
+@pytest.fixture
+def simple_client():
     provider = SomeSynchronousProvider()
-    cli = SimpleClient(provider=provider)
-    result = cli.get(device='some-device', prop='some-property')
+    return SimpleClient(provider=provider)
+
+
+@pytest.fixture
+def callback_client():
+    provider = SomeSynchronousProvider()
+    return CallbackClient(provider=provider)
+
+
+@pytest.fixture
+def asyncio_client():
+    provider = SomeSynchronousProvider()
+    return AsyncIOClient(provider=provider)
+
+
+def test_simple_client__get(simple_client):
+    result = simple_client.get(device='some-device', prop='some-property')
+    assert result == {'param', 42}
+
+
+def test_simple_client__set(simple_client):
+    result = simple_client.set(device='some-device', prop='some-property', value="some-string")
+    assert result == {'some-header': {}}
+    result = simple_client.get(device='some-device', prop='some-property')
+    assert result == {'param', 'some-string'}
+
+
+@pytest.mark.asyncio
+async def test_asyncio_client__get(asyncio_client):
+    result = await asyncio_client.get(device='some-device', prop='some-property')
     assert result == {'param', 42}
 
 
 @pytest.mark.asyncio
-async def test_asyncio_client():
-    provider = SomeSynchronousProvider()
-    cli = AsyncIOClient(provider=provider)
-    result = await cli.get(device='some-device', prop='some-property')
-    assert result == {'param', 42}
+async def test_asyncio_client__set(asyncio_client):
+    result = await asyncio_client.set(
+        device='some-device', prop='some-property', value="some-string",
+    )
+    assert result == {'some-header': {}}
+    result = await asyncio_client.get(device='some-device', prop='some-property')
+    assert result == {'param', 'some-string'}
 
 
-@pytest.mark.asyncio
-async def test_callback_client():
-    provider = SomeSynchronousProvider()
-    cli = CallbackClient(provider=provider)
+def test_callback_client__get(callback_client):
     callback = unittest.mock.Mock()
-    cli.get(device='some-device', prop='some-property', callback=callback)
+    callback_client.get(device='some-device', prop='some-property', callback=callback)
     callback.assert_not_called()
-    time.sleep(0.5)
+    time.sleep(0.3)
     callback.assert_called_once_with({'param', 42})
+
+
+def test_callback_client__set(callback_client):
+    callback = unittest.mock.Mock()
+    callback_client.set(
+        device='some-device', prop='some-property', value="some-string", callback=callback,
+    )
+    callback.assert_not_called()
+    time.sleep(0.3)
+    callback.assert_called_once_with({'some-header': {}})
+
+    callback = unittest.mock.Mock()
+    callback_client.get(
+        device='some-device', prop='some-property', callback=callback,
+    )
+    time.sleep(0.3)
+    callback.assert_called_once_with({'param', 'some-string'})

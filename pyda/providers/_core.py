@@ -48,5 +48,12 @@ class BaseProvider:
     def _get_property(self, query: "PropertyAccessQuery") -> concurrent.futures.Future:
         pass
 
+    def _set_property(
+            self,
+            query: "PropertyAccessQuery",
+            value: typing.Any,
+    ) -> concurrent.futures.Future:
+        pass
+
     def _create_property_stream(self, query: "PropertyAccessQuery") -> BasePropertyStream:
         pass

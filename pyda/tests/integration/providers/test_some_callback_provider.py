@@ -8,35 +8,77 @@ from pyda import AsyncIOClient, CallbackClient, SimpleClient
 from .some_callback_provider import SomeCallbackProvider
 
 
-def test_simple_client():
+@pytest.fixture
+def simple_client():
     provider = SomeCallbackProvider()
-    cli = SimpleClient(provider=provider)
-    result = cli.get(device='some-device', prop='some-property')
+    return SimpleClient(provider=provider)
+
+
+@pytest.fixture
+def callback_client():
+    provider = SomeCallbackProvider()
+    return CallbackClient(provider=provider)
+
+
+@pytest.fixture
+def asyncio_client():
+    provider = SomeCallbackProvider()
+    return AsyncIOClient(provider=provider)
+
+
+def test_simple_client__get(simple_client):
+    result = simple_client.get(device='some-device', prop='some-property')
+    assert result == {'param', 42}
+
+
+def test_simple_client__set(simple_client):
+    result = simple_client.set(device='some-device', prop='some-property', value='some-value')
+    assert result == {'some-header': {}}
+    result = simple_client.get(device='some-device', prop='some-property')
+    assert result == {'param', 'some-value'}
+
+
+@pytest.mark.asyncio
+async def test_asyncio_client__get(asyncio_client):
+    result = await asyncio_client.get(device='some-device', prop='some-property')
     assert result == {'param', 42}
 
 
 @pytest.mark.asyncio
-async def test_asyncio_client():
-    provider = SomeCallbackProvider()
-    cli = AsyncIOClient(provider=provider)
-    result = await cli.get(device='some-device', prop='some-property')
-    assert result == {'param', 42}
+async def test_asyncio_client__set(asyncio_client):
+    result = await asyncio_client.set(
+        device='some-device', prop='some-property', value='some-value',
+    )
+    assert result == {'some-header': {}}
+    result = await asyncio_client.get(device='some-device', prop='some-property')
+    assert result == {'param', 'some-value'}
 
 
-def test_callback_client():
-    provider = SomeCallbackProvider()
-    cli = CallbackClient(provider=provider)
+def test_callback_client__get(callback_client):
     callback = unittest.mock.Mock()
-    cli.get(device='some-device', prop='some-property', callback=callback)
+    callback_client.get(device='some-device', prop='some-property', callback=callback)
     callback.assert_not_called()
     time.sleep(0.5)
     callback.assert_called_once_with({'param', 42})
 
 
-def test_simple_client_subs():
-    provider = SomeCallbackProvider()
-    cli = SimpleClient(provider=provider)
-    subs = cli.subscribe(device='some-device', prop='some-property')
+def test_callback_client__set(callback_client):
+    callback = unittest.mock.Mock()
+    callback_client.set(
+        device='some-device', prop='some-property', callback=callback, value='some-value',
+    )
+    callback.assert_not_called()
+    time.sleep(0.5)
+    callback.assert_called_once_with({'some-header': {}})
+
+    callback = unittest.mock.Mock()
+    callback_client.get(device='some-device', prop='some-property', callback=callback)
+    time.sleep(0.5)
+    callback.assert_called_once_with({'param', 'some-value'})
+
+
+def test_simple_client__subs(simple_client):
+    subs = simple_client.subscribe(device='some-device', prop='some-property')
     subs.start()
     with subs:
         for response in subs:
@@ -44,18 +86,16 @@ def test_simple_client_subs():
             break
     subs.stop()
     subs.start()
-    with cli.subscriptions:
-        for response in cli.subscriptions:
+    with simple_client.subscriptions:
+        for response in simple_client.subscriptions:
             assert response == {'param', 42.01}
             break
-        assert next(cli.subscriptions) == {'param', 42.02}
+        assert next(simple_client.subscriptions) == {'param', 42.02}
 
 
-def test_callback_client_subs():
-    provider = SomeCallbackProvider()
-    cli = CallbackClient(provider=provider)
+def test_callback_client__subs(callback_client):
     callback = unittest.mock.Mock()
-    subs = cli.subscribe(device='some-device', prop='some-property', callback=callback)
+    subs = callback_client.subscribe(device='some-device', prop='some-property', callback=callback)
     subs.start()
     callback.assert_not_called()
     time.sleep(0.3)
@@ -64,12 +104,10 @@ def test_callback_client_subs():
 
 
 @pytest.mark.asyncio
-async def test_asyncio_client_subs():
-    provider = SomeCallbackProvider()
-    cli = AsyncIOClient(provider=provider)
+async def test_asyncio_client__subs(asyncio_client):
     # TODO: If we are going to verify that a subscription is possible,
     #  perhaps this should be ``await cli.subscribe(...)``.
-    subs = cli.subscribe(device='some-device', prop='some-property')
+    subs = asyncio_client.subscribe(device='some-device', prop='some-property')
     subs.start()
     async with subs:
         async for resp in subs:
@@ -77,7 +115,7 @@ async def test_asyncio_client_subs():
             break
     subs.stop()
     subs.start()
-    async with cli.subscriptions:
-        async for resp in cli.subscriptions:
+    async with asyncio_client.subscriptions:
+        async for resp in asyncio_client.subscriptions:
             assert resp == {'param', 42 + 1 / 100}
             break
