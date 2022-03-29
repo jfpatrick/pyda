@@ -81,6 +81,19 @@ class AsyncIOClient(core.BaseClient):
         future = self.provider._get_property(query)
         return await asyncio.wrap_future(future)
 
+    async def set(
+            self,
+            *,
+            device: str,
+            prop: str,
+            value: typing.Any,
+            selector: "SelectorArgumentType" = data.Selector(''),
+    ) -> "PropertyAccessResponse":
+        selector = self._ensure_selector(selector)
+        query = self._build_query(device, prop, selector)
+        future = self.provider._set_property(query, value)
+        return await asyncio.wrap_future(future)
+
     def subscribe(
             self,
             *,

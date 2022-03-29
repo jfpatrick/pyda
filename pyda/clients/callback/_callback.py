@@ -45,10 +45,32 @@ class CallbackClient(core.BaseClient):
             prop: str,
             callback: Callback,
             selector: "SelectorArgumentType" = data.Selector(''),
-    ):
+    ) -> None:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
         future = self.provider._get_property(query)
+
+        def run_callback(future):
+            self._pool.submit(callback, future.result())
+
+        future.add_done_callback(run_callback)
+
+    def set(
+            self,
+            *,
+            device: str,
+            prop: str,
+            value: typing.Any,
+            callback: typing.Optional[Callback] = None,
+            selector: "SelectorArgumentType" = data.Selector(''),
+    ) -> None:
+        selector = self._ensure_selector(selector)
+        query = self._build_query(device, prop, selector)
+        future = self.provider._set_property(query, value)
+
+        if callback is None:
+            def callback(property_access: "PropertyAccessResponse") -> None:
+                return None
 
         def run_callback(future):
             self._pool.submit(callback, future.result())

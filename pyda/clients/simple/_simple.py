@@ -80,6 +80,19 @@ class SimpleClient(core.BaseClient):
         future = self.provider._get_property(query)
         return future.result()
 
+    def set(
+            self,
+            *,
+            device: str,
+            prop: str,
+            value: typing.Any,
+            selector: "SelectorArgumentType" = data.Selector(''),
+    ) -> "PropertyAccessResponse":
+        selector = self._ensure_selector(selector)
+        query = self._build_query(device, prop, selector)
+        future = self.provider._set_property(query, value)
+        return future.result()
+
     def subscribe(
             self,
             *,
