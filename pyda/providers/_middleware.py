@@ -5,7 +5,7 @@ import typing
 from ._core import BasePropertyStream
 
 if typing.TYPE_CHECKING:
-    from ..data import PropertyAccessResponse
+    from ..data import PropertyRetrievalResponse
 
 SYNC_LOG = logging.getLogger(f'{__name__}.synchroniser')
 
@@ -19,15 +19,15 @@ class StreamChain(BasePropertyStream):
             self,
             stream: BasePropertyStream,
             processor: typing.Callable[
-                ["PropertyAccessResponse"],
-                typing.Optional["PropertyAccessResponse"],
+                ["PropertyRetrievalResponse"],
+                typing.Optional["PropertyRetrievalResponse"],
             ],
     ):
         self._processor = processor
         self._stream = stream
         super().__init__()
 
-    def _response_received(self, response: "PropertyAccessResponse"):
+    def _response_received(self, response: "PropertyRetrievalResponse"):
         processed_resp = self._processor(response)
         if processed_resp is not None:
             self._broadcast_response(processed_resp)
@@ -75,7 +75,7 @@ class SynchronizerMiddleware(StreamMiddleware):
 
     def synchronised_response_handler(
             self,
-            response: "PropertyAccessResponse",
+            response: "PropertyRetrievalResponse",
             *,
             stream: StreamChain,
     ) -> None:

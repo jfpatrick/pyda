@@ -5,30 +5,30 @@ import pytest
 from pyda import data
 
 
-def test__PropertyAccessResponse__init__fails():
+def test__PropertyRetrievalResponse__init__fails():
     with pytest.raises(
         AssertionError, match='"value" and "exception" '
         'are mutually exclusive arguments',
     ):
-        data.PropertyAccessResponse(
+        data.PropertyRetrievalResponse(
             query=mock.MagicMock(),
             value=mock.MagicMock(),
             exception=data.PropertyAccessError("Test error"),
         )
 
 
-def test__PropertyAccessResponse__value_succeeds():
+def test__PropertyRetrievalResponse__value_succeeds():
     val = mock.MagicMock()
-    resp = data.PropertyAccessResponse(
+    resp = data.PropertyRetrievalResponse(
         query=mock.MagicMock(),
         value=val,
     )
     assert resp.value is val
 
 
-def test__PropertyAccessResponse__value_fails():
+def test__PropertyRetrievalResponse__value_fails():
     exc = data.PropertyAccessError("Test error")
-    resp = data.PropertyAccessResponse(
+    resp = data.PropertyRetrievalResponse(
         query=mock.MagicMock(),
         exception=exc,
     )
@@ -41,7 +41,7 @@ def test__PropertyAccessResponse__value_fails():
     "kwargs,expected_str", [
         (
                 {"value": "VALUE_OUTPUT", "query": "QUERY_OUTPUT"},
-                "-- PropertyAccessResponse from QUERY_OUTPUT --\n\n"
+                "-- PropertyRetrievalResponse from QUERY_OUTPUT --\n\n"
                 "VALUE_OUTPUT",
         ),
         (
@@ -49,11 +49,11 @@ def test__PropertyAccessResponse__value_fails():
                     "exception": data.PropertyAccessError("Test error"),
                     "query": "QUERY_OUTPUT",
                 },
-                "-- PropertyAccessResponse from QUERY_OUTPUT --\n\n"
+                "-- PropertyRetrievalResponse from QUERY_OUTPUT --\n\n"
                 "Exception occurred: Test error",
         ),
     ],
 )
-def test__PropertyAccessResponse__str__(kwargs, expected_str):
-    resp = data.PropertyAccessResponse(**kwargs)
+def test__PropertyRetrievalResponse__str__(kwargs, expected_str):
+    resp = data.PropertyRetrievalResponse(**kwargs)
     assert str(resp) == expected_str
