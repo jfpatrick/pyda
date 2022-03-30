@@ -88,29 +88,34 @@ itself hasn't changed its value - this behaviour is provider specific (TO BE DET
 
 .. note:: Verify that this is provider specific (in my opinion this is property configuration (to give first update or not)
 
-The simplest way to subscribe to data is to use a callback function::
+If we wanted to pursue a sequential script just like we've done until now, it is possible to use subscriptions in a
+blocking manner with :class:`~pyda.SimpleClient`.
 
-    import pyda
-    from pyda_japc import JAPCProvider
+.. seealso:: In real applications, you will most likely want asynchronous processing for subscriptions. For details,
+             see :doc:`async_usage`.
 
-    client = pyda.CallbackClient(provider=JAPCProvider())
+Blocking subscription accumulates incoming data in a queue, which user can consume in a sequential order by
+iterating through it, with each iteration retrieving the next incoming response::
+
     sub = client.subscribe(device='SOME.DEVICE',
                            prop='SomeProperty',
-                           selector='SOME.TIMING.USER',
-                           callback=print)
+                           selector='SOME.TIMING.USER')
     sub.start()
+    with sub:
+        for response in sub:
+            print(response)
 
-This will result in property data being printed to the ``stdout`` whenever subscription notifications are received.
+This will result in incoming data being printed to the ``stdout`` whenever subscription notifications are received.
 
-.. note:: Subscription notifications are asynchronous, therefore when put into a simple sequential script, this code
-          is unlikely to produce any output, because Python interpreter will finish operation before any notification
-          is received.
-
-Note that the ``CallbackClient`` is implicitly stateful, and holds on to the references of the subscriptions::
+Note that the ``client`` is implicitly stateful, and holds on to the references of the subscriptions::
 
     for sub in client.subscriptions:
-        print(f'{sub.device_name}/{sub.property_name}')
+        print(sub.query)  # This will print request information, such as device/property names, selector, etc
     ...
 
-There are other types of asynchronous clients, which have a different syntax, allowing user to choose client API based
-on the preferences or needs. Please see :doc:`async_usage` for details.
+If it is useful to consume incoming data from multiple subscriptions in a uniform manner, a subscription pool can be
+addressed to consume data simultaneously from all subscription queues::
+
+    with client.subscriptions:
+        for response in client.subscriptions:
+            print(response)
