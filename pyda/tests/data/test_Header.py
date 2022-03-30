@@ -148,38 +148,40 @@ def test__Header__cycle_timestamp(context, expected_stamp):
     assert header.cycle_timestamp == expected_stamp
 
 
-@pytest.mark.parametrize("context,expected_str", [
-    (
-            pyds_model.MultiplexedSettingContext(
-                'MULTIPLEXED.SETTINGS.CTX',
-                set_stamp=int(10e9),
-                acquisition_stamp=int(20e9),
-            ),
-            '[selector=MULTIPLEXED.SETTINGS.CTX, acquisition_time=1970-01-01 '
-            '00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
-    ),
-    (
-            pyds_model.SettingContext(
-                set_stamp=int(10e9),
-                acquisition_stamp=int(20e9),
-            ),
-            '[acquisition_time=1970-01-01 '
-            '00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
-    ),
-    (
-            pyds_model.CycleBoundAcquisitionContext(
-                'CYCLEBOUND.ACQ.CTX',
-                cycle_stamp=int(30e9),
-                acquisition_stamp=int(20e9),
-            ),
-            '[selector=CYCLEBOUND.ACQ.CTX, acquisition_time=1970-01-01 '
-            '00:00:20+00:00, cycle_time=1970-01-01 00:00:30+00:00]',
-    ),
-    (
-            pyds_model.AcquisitionContext(acquisition_stamp=int(20e9)),
-            '[acquisition_time=1970-01-01 00:00:20+00:00]',
-    ),
-])
+@pytest.mark.parametrize(
+    "context,expected_str", [
+        (
+                pyds_model.MultiplexedSettingContext(
+                    'MULTIPLEXED.SETTINGS.CTX',
+                    set_stamp=int(10e9),
+                    acquisition_stamp=int(20e9),
+                ),
+                '[selector=MULTIPLEXED.SETTINGS.CTX, acquisition_time=1970-01-01 '
+                '00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
+        ),
+        (
+                pyds_model.SettingContext(
+                    set_stamp=int(10e9),
+                    acquisition_stamp=int(20e9),
+                ),
+                '[acquisition_time=1970-01-01 '
+                '00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
+        ),
+        (
+                pyds_model.CycleBoundAcquisitionContext(
+                    'CYCLEBOUND.ACQ.CTX',
+                    cycle_stamp=int(30e9),
+                    acquisition_stamp=int(20e9),
+                ),
+                '[selector=CYCLEBOUND.ACQ.CTX, acquisition_time=1970-01-01 '
+                '00:00:20+00:00, cycle_time=1970-01-01 00:00:30+00:00]',
+        ),
+        (
+                pyds_model.AcquisitionContext(acquisition_stamp=int(20e9)),
+                '[acquisition_time=1970-01-01 00:00:20+00:00]',
+        ),
+    ],
+)
 def test__Header__str__(context, expected_str):
     header = data.Header(context)
     assert str(header) == expected_str
