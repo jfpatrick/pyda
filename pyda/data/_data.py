@@ -70,19 +70,18 @@ class Header:
         )
 
     def __str__(self):
-        res = '['
+        items = []
         selector = self.selector
         if selector is not None:
-            res += f'selector={self.selector}, '
-        res += f'acquisition_time={self.acquisition_time()}'
+            items.append(f'selector={selector}')
+        items.append(f'acquisition_time={self.acquisition_time()}')
         set_time = self.set_time()
         if set_time:
-            res += f', set_time={set_time}'
+            items.append(f'set_time={set_time}')
         cycle_time = self.cycle_time()
         if cycle_time:
-            res += f', cycle_time={cycle_time}'
-        res += ']'
-        return res
+            items.append(f'cycle_time={cycle_time}')
+        return f'[{", ".join(items)}]'
 
 
 def datetime_from_ns(timestamp: float) -> datetime.datetime:
