@@ -17,7 +17,7 @@ Using the `acc-py Python package index
 
    pip install pyda
 
-.. note:: WARNING: THIS DOESN'T WORK, AND IS A NAME THAT WILL COLLIDE WITH THE OUTSIDE WORLD
+.. warning:: "pyda" is a working prototype name and is likely to change before the stable release
 
 PyDA is bound to utilize pluggable data providers, therefore you likely will need to install the provider.
 
