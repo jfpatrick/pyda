@@ -134,3 +134,4 @@ def test__CallbackClient__subscribe(kwargs, dummy_provider, expected_query_args)
         data.PropertyAccessQuery(**expected_query_args),
     )
     assert isinstance(sub, callback.CallbackSubscription)
+    assert sub.query == data.PropertyAccessQuery(**expected_query_args)

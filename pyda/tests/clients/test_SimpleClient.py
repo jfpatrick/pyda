@@ -132,3 +132,4 @@ def test__SimpleClient__subscribe(kwargs, dummy_provider, expected_query_args):
         data.PropertyAccessQuery(**expected_query_args),
     )
     assert isinstance(sub, simple.SimpleSubscription)
+    assert sub.query == data.PropertyAccessQuery(**expected_query_args)

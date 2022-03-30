@@ -3,7 +3,7 @@ import typing
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyRetrievalResponse
+    from ...data import PropertyAccessQuery, PropertyRetrievalResponse
     from ...providers._core import BasePropertyStream, BaseProvider
     from ...providers._middleware import StreamMiddleware
 
@@ -15,8 +15,13 @@ class BaseSubscription:
     The client side subscription type.
 
     """
-    def __init__(self, property_stream: "BasePropertyStream"):
+    def __init__(self, property_stream: "BasePropertyStream", query: "PropertyAccessQuery"):
         self._property_stream = property_stream
+        self._query = query
+
+    @property
+    def query(self) -> "PropertyAccessQuery":
+        return self._query
 
     def _response_received(self, response: "PropertyRetrievalResponse"):
         # Dummy method for now to implement the StreamResponseHandlerProtocol protocol.
@@ -71,7 +76,7 @@ class BaseClient:
         selector = self._ensure_selector(selector)
         query = self._build_query(device, prop, selector)
         stream = self._create_property_stream(query)
-        subs = self._build_subscription(stream)
+        subs = self._build_subscription(stream, query)
         self.subscriptions._add_subscription(subs)
         return subs
 
@@ -90,8 +95,8 @@ class BaseClient:
             return data.Selector(selector)
         return selector
 
-    def _build_subscription(self, stream: "BasePropertyStream"):
-        return BaseSubscription(stream)
+    def _build_subscription(self, stream: "BasePropertyStream", query: "PropertyAccessQuery"):
+        return BaseSubscription(stream, query)
 
     def _build_query(
             self,

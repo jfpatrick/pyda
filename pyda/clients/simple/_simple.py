@@ -5,7 +5,11 @@ from .. import core
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyRetrievalResponse, PropertyUpdateResponse
+    from ...data import (
+        PropertyAccessQuery,
+        PropertyRetrievalResponse,
+        PropertyUpdateResponse,
+    )
     from ...providers._core import BasePropertyStream
     from ..core._core import SelectorArgumentType
 
@@ -14,10 +18,11 @@ class SimpleSubscription(core.BaseSubscription):
     def __init__(
             self,
             property_stream: "BasePropertyStream",
+            query: "PropertyAccessQuery",
     ):
         self._q: queue.Queue = queue.Queue()
         self._enabled_queues: typing.List[queue.Queue] = []
-        super().__init__(property_stream)
+        super().__init__(property_stream, query)
 
     def subs_response_received(self, response: "PropertyRetrievalResponse"):
         for q in self._enabled_queues:
@@ -104,6 +109,7 @@ class SimpleClient(core.BaseClient):
         query = self._build_query(device, prop, selector)
         subs = SimpleSubscription(
             self._create_property_stream(query),
+            query,
         )
         self.subscriptions._subs.append(subs)
         return subs
