@@ -26,9 +26,10 @@ PyDA is bound to utilize pluggable data providers, therefore you likely will nee
 All possible providers are deliberately not bundled into PyDA, since they may have very specific dependencies (e.g.
 Java libraries for JPype-based providers).
 
-If you wish to install the JAPC device provider, please include ``japc-provider`` extra when installing PyDA::
+If you wish to install the JAPC device provider, please include an additional dependency (``pyda-japc``) when
+installing PyDA::
 
-   pip install pyda[japc-provider]
+   pip install pyda pyda-japc
 
 
 Documentation contents
