@@ -140,3 +140,4 @@ async def test__AsyncIOClient__subscribe(kwargs, dummy_provider, expected_query_
         data.PropertyAccessQuery(**expected_query_args),
     )
     assert isinstance(sub, asyncio_client.AsyncIOSubscription)
+    assert sub.query == data.PropertyAccessQuery(**expected_query_args)

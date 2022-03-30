@@ -6,7 +6,11 @@ from .. import core
 from ... import data
 
 if typing.TYPE_CHECKING:
-    from ...data import PropertyRetrievalResponse, PropertyUpdateResponse
+    from ...data import (
+        PropertyAccessQuery,
+        PropertyRetrievalResponse,
+        PropertyUpdateResponse,
+    )
     from ...providers._core import BasePropertyStream
     from ..core._core import SelectorArgumentType
 
@@ -18,12 +22,13 @@ UpdateCallback = typing.Callable[["PropertyUpdateResponse"], None]
 class CallbackSubscription(core.BaseSubscription):
     def __init__(
             self, property_stream: "BasePropertyStream",
+            query: "PropertyAccessQuery",
             client: "CallbackClient",
             callback: RetrievalCallback,
     ):
         self._cli = weakref.ref(client)
         self._callback = callback
-        super().__init__(property_stream)
+        super().__init__(property_stream, query)
 
     def subs_response_received(self, response: "PropertyRetrievalResponse"):
         cli = self._cli()
@@ -86,6 +91,7 @@ class CallbackClient(core.BaseClient):
         query = self._build_query(device, prop, selector)
         subs = CallbackSubscription(
             self._create_property_stream(query),
+            query,
             self,
             callback,
         )
