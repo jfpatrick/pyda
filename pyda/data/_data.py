@@ -69,6 +69,21 @@ class Header:
             if timestamp is not None else None
         )
 
+    def __str__(self):
+        res = '['
+        selector = self.selector
+        if selector is not None:
+            res += f'selector={self.selector}, '
+        res += f'acquisition_time={self.acquisition_time()}'
+        set_time = self.set_time()
+        if set_time:
+            res += f', set_time={set_time}'
+        cycle_time = self.cycle_time()
+        if cycle_time:
+            res += f', cycle_time={cycle_time}'
+        res += ']'
+        return res
+
 
 def datetime_from_ns(timestamp: float) -> datetime.datetime:
     sec = timestamp / 1e9
@@ -116,6 +131,9 @@ class AcquiredPropertyData:
 
     def mutable_data(self) -> typing.Dict[str, typing.Any]:
         return {k: v for k, v in self.items()}
+
+    def __str__(self):
+        return f"{self.__class__.__qualname__} {self.header}\n{self._dtv}"
 
 
 class PropertyAccessError(Exception):
@@ -195,7 +213,12 @@ class UpdateHeader:
 
     @property
     def selector(self) -> Selector:
+        # TODO: This is not consistent with Header, because later may return None in some cases
+        #  (based on type of context that it stores)
         return self._selector
+
+    def __str__(self):
+        return f'[selector={self.selector}]'
 
 
 class PropertyUpdateResponse:
