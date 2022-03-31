@@ -2,7 +2,8 @@ RBAC support
 ============
 
 
-Access to certain devices will inevitably be restricted. This library relies on :mod:`pyrbac` for authorization purposes.
+Access to certain devices will inevitably be restricted, and will require authentication to be able to get or set data.
+This library relies on :mod:`pyrbac` for authorization purposes.
 
 You can supply an RBAC token to any client object and all subsequent calls will be performed with that token.
 
@@ -15,7 +16,9 @@ Let's obtain a valid token using :mod:`pyrbac` first (not PyDA specific, refer t
 
     rbac_client = pyrbac.AuthenticationClient.create()
     try:
-        token = rbac_client.login_explicit("aeinstein", "YouNeverFailUntilYouStopTrying123")
+        username = "aeinstein"
+        password = "YouNeverFailUntilYouStopTrying123"
+        token = rbac_client.login_explicit(username, password)
     except pyrbac.AuthenticationError as e:
         print(e)
     else:

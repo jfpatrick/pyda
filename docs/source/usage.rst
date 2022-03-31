@@ -11,6 +11,9 @@ to/from a number of sources. These plugins are called "PyDA providers".
 
 .. note:: link required for "PyDA providers"
 
+.. note:: PyDA is in the prototype phase, and there are certain design decisions that we are making related to that.
+          To know more about the details, refer to :doc:`caveats`.
+
 To better illustrate the utility, let's take an example of using a common device-data provider (:class:`pyda_japc.JapcProvider`),
 combined with a simple synchronous API (:class:`pyda.SimpleClient`) for convenient and easy to reason about data flow,
 especially in interactive and scripting contexts::
@@ -27,8 +30,9 @@ With such a client, we can get a data property from a particular device::
                           selector='SOME.TIMING.USER')
 
 The returned type is a :class:`pyda.data.PropertyRetrievalResponse`, which is an envelope containing information
-about requested information, returned data and meta-data or the exception. To access a value from this envelope,
-simply access :attr:`~pyda.data.PropertyRetrievalResponse.value` property. If data was not retrieved and exception
+about requested information, returned data and meta-data or the exception. Value and exception are mutually exclusive
+here, and one of them is guaranteed to exist. To access a value from this envelope, simply access
+:attr:`~pyda.data.PropertyRetrievalResponse.value` property. If data was not retrieved and exception
 was caught, this action will raise::
 
     try:
@@ -40,6 +44,8 @@ The same exception (without raising) can be also obtained via :attr:`~pyda.data.
 property::
 
     my_exception = response.exception
+
+It will return :obj:`None`, if value is present in the envelope.
 
 The value type is an immutable version of :class:`pyds_model.DataTypeValue` purposed for incoming data.
 A :class:`pyds_model.DataTypeValue` provides strongly-typed dictionary-like data structures. The API is intentionally
@@ -76,17 +82,11 @@ we could alternatively have simply set the new field directly::
                selector='SOME.TIMING.USER',
                value={'some-field': 15})
 
-.. note:: All client APIs have keyword-only arguments. This is done to reduce the likelihood of breaking changes in the
-          prototype, should the argument composition change in the future.
-
-Subscriptions
 -------------
 
 It is common to want to listen and react to ongoing changes to a device property.
-Subscriptions are used for this purpose. Most providers guarantee an initial value is given even if the device
-itself hasn't changed its value - this behaviour is provider specific (TO BE DETERMINED).
-
-.. note:: Verify that this is provider specific (in my opinion this is property configuration (to give first update or not)
+Subscriptions are used for this purpose. Most providers have a convention of the "first update", which guarantees
+the initial value is given right at the start of the subscription, even if the device itself hasn't changed its value.
 
 If we wanted to pursue a sequential script just like we've done until now, it is possible to use subscriptions in a
 blocking manner with :class:`~pyda.SimpleClient`.
