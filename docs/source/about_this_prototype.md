@@ -116,7 +116,7 @@ Allow swapping the backend out...
 -->
 
 
-### Known limitations and related future plans (non-exhaustive)
+### Known limitations, design decisions and related future plans (non-exhaustive)
 
 #### Keyword only arguments
 
@@ -148,6 +148,17 @@ simple_getter = functools.partial(client.get, selector=the_default_selector, dev
 print(simple_getter().value)
 ```
 
+#### No more timezone state
+
+In PyJapc, it is possible to pass a timezone to the constructor, which will influence `datetime` objects
+stored in the value headers. PyDA does not allow it. While value headers also have a convenience accessor
+producing `datetime` objects, they are always created with UTC timezone.
+
+#### NoSet
+
+PyJapc allows a safe-mode operation via `noSet=True` constructor argument, which effectively replaces
+all SET operations with a log output of what would be actually done, sort of a dry-run. PyDA does not
+include this capability.
 
 <!--
 #### Properties not parameters
