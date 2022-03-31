@@ -1,14 +1,8 @@
 Asynchronous actions
 ====================
 
-Each client API allows synchronous actions, similar to those of :class:`~pyda.SimpleClient` for convenience.
-However, their main target is asynchronous actions:
-
-- Subscriptions
-- Asynchronous GETs
-- Asynchronous SETs
-
-We provide a number of asynchronous client APIs:
+Unlike :class:`~pyda.SimpleClient`, which provides blocking/synchronous access to GET, SET, SUBSCRIBE,
+clients mentioned here achieve the same in a non-blocking manner. We provide a number of asynchronous client APIs:
 
 * `CallbackClient`_
 * `AsyncIOClient`_
@@ -40,14 +34,15 @@ This will result in property data being printed to the ``stdout`` whenever subsc
           is unlikely to produce any output, because Python interpreter will finish operation before any notification
           is received.
 
-To make this code work in a simple script, we must put an artificial wait to allow subscriptions to execute::
+To make this code work in a simple script, we must put an artificial wait to allow subscriptions to execute. This wait
+will block the current thread for a number of seconds::
 
     import time
     time.sleep(5)
 
-JAPC callbacks are executed in a thread pool, therefore there's no harm to blocking current thread. However, it's
-unclear, what is a good time value to put into ``sleep`` function. And what if we wanted to keep printing subscriptions
-forever? This use case can be better approached via `AsyncIOClient`_.
+:class:`~pyda.CallbackClient`'s callbacks are executed in a background thread, therefore there's no harm in blocking
+current thread. However, it's unclear, what is a good time value to put into ``sleep`` function. And what if we wanted
+to keep printing subscriptions forever? This use case can be better approached via `AsyncIOClient`_.
 
 .. note:: This does not present a problem in GUI applications, because each GUI application has its own event loop,
           hence Python process does not finish until user quits the application.
