@@ -17,7 +17,7 @@ Using the `acc-py Python package index
 
    pip install pyda
 
-.. note:: WARNING: THIS DOESN'T WORK, AND IS A NAME THAT WILL COLLIDE WITH THE OUTSIDE WORLD
+.. warning:: "pyda" is a working prototype name and is likely to change before the stable release
 
 PyDA is bound to utilize pluggable data providers, therefore you likely will need to install the provider.
 
@@ -26,9 +26,10 @@ PyDA is bound to utilize pluggable data providers, therefore you likely will nee
 All possible providers are deliberately not bundled into PyDA, since they may have very specific dependencies (e.g.
 Java libraries for JPype-based providers).
 
-If you wish to install the JAPC device provider, please include ``japc-provider`` extra when installing PyDA::
+If you wish to install the JAPC device provider, please include an additional dependency (``pyda-japc``) when
+installing PyDA::
 
-   pip install pyda[japc-provider]
+   pip install pyda pyda-japc
 
 
 Documentation contents
@@ -45,6 +46,8 @@ Documentation contents
     :maxdepth: 1
 
     usage
+    async_usage
+    rbac
 
 .. toctree::
     :caption: Reference docs
