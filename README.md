@@ -1,10 +1,3 @@
-# pyda
+# pyda: An extensible device access client library
 
-SHORT DESCRIPTION OF PROJECT
-
-You can use [Github-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
-to write your content.
-
-## Purpose of this project
-## Getting started
-##
+[Documentation](https://acc-py.web.cern.ch/gitlab/acc-co/devops/python/prototypes/pyda/docs/stable/)
