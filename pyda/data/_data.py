@@ -4,7 +4,9 @@ from datetime import timezone
 import json
 import typing
 
+import numpy as np
 import pyds_model
+from pyds_model._ds_model import AnyData  # noqa
 
 
 class Selector:
@@ -234,3 +236,24 @@ class PropertyUpdateResponse:
         except PropertyAccessError as e:
             val += f"Exception occurred: {e}"
         return val
+
+
+def anydata_from_dict(value: typing.Dict) -> AnyData:
+    """
+    Convert a dictionary into an AnyData using numpy type casting rules.
+
+    """
+    # TODO: We will want to extend this transformation on a per-provider basis
+    #       when we have additional property metadata (including type info) as
+    #       this will allow us to make more informed decisions when converting
+    #       to numpy types.
+    dtv: AnyData = AnyData.create()
+
+    for k, v in value.items():
+        vs = np.array(v)
+        if vs.ndim == 0:
+            # Take the scalar out of a 0-d array. Note that .item() will extract Python
+            # types, whereas we want to preserve numpy types (scalars).
+            vs = vs[()]
+        dtv[k] = vs
+    return dtv
