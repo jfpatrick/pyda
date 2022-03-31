@@ -34,12 +34,12 @@ REQUIREMENTS: dict = {
 setup(
     name='pyda',
 
-    author='Phil Elson',
-    author_email='philip.elson@cern.ch',
-    description='SHORT DESCRIPTION OF PROJECT',
+    author='Acc-Py team',
+    author_email='acc-python-support@cern.ch',
+    description='An extensible device access client library',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
-    url='',
+    url='https://gitlab.cern.ch/acc-co/devops/python/prototypes/pyda',
 
     packages=find_packages(),
     python_requires='~=3.7',
