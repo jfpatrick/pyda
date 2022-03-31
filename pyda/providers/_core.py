@@ -2,7 +2,10 @@ import concurrent.futures
 import typing
 import weakref
 
+from pyds_model._ds_model import AnyData  # noqa
 import typing_extensions
+
+from ..data._data import anydata_from_dict
 
 if typing.TYPE_CHECKING:
     from ..data import PropertyAccessQuery, PropertyRetrievalResponse
@@ -54,6 +57,24 @@ class BaseProvider:
             value: typing.Any,
     ) -> concurrent.futures.Future:
         pass
+
+    def _prepare_value_for_set(
+            self,
+            query: "PropertyAccessQuery",
+            value: typing.Any,
+    ) -> AnyData:
+        # TODO: This would become a DeviceProperty behaviour if we have such a type in the future.
+
+        if not isinstance(value, (AnyData, dict)):
+            raise TypeError(f"Value must be either AnyData or dict. Got {type(value)}")
+
+        if isinstance(value, dict):
+            # We don't use the query in this base implementation, but it is useful if context
+            # specific conversions are needed (as is done in PyJapc).
+            _ = query
+            value = anydata_from_dict(value)
+
+        return value
 
     def _create_property_stream(self, query: "PropertyAccessQuery") -> BasePropertyStream:
         pass

@@ -16,13 +16,13 @@ with (HERE / 'README.md').open('rt') as fh:
 
 REQUIREMENTS: dict = {
     'core': [
+        'numpy',
         'pyds-model',
     ],
     'test': [
         'pytest',
     ],
     'dev': [
-        # 'requirement-for-development-purposes-only',
     ],
     'doc': [
         'sphinx',
