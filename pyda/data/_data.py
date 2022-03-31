@@ -247,7 +247,7 @@ def anydata_from_dict(value: typing.Dict) -> AnyData:
     #       when we have additional property metadata (including type info) as
     #       this will allow us to make more informed decisions when converting
     #       to numpy types.
-    dtv: AnyData = AnyData.create()
+    data: AnyData = AnyData.create()
 
     for k, v in value.items():
         vs = np.array(v)
@@ -255,5 +255,5 @@ def anydata_from_dict(value: typing.Dict) -> AnyData:
             # Take the scalar out of a 0-d array. Note that .item() will extract Python
             # types, whereas we want to preserve numpy types (scalars).
             vs = vs[()]
-        dtv[k] = vs
-    return dtv
+        data[k] = vs
+    return data

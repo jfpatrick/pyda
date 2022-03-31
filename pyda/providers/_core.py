@@ -66,7 +66,7 @@ class BaseProvider:
         # TODO: This would become a DeviceProperty behaviour if we have such a type in the future.
 
         if not isinstance(value, (AnyData, dict)):
-            raise TypeError(f"Value must be either DataTypeValue or dict. Got {type(value)}")
+            raise TypeError(f"Value must be either AnyData or dict. Got {type(value)}")
 
         if isinstance(value, dict):
             # We don't use the query in this base implementation, but it is useful if context
