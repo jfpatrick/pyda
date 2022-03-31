@@ -25,8 +25,8 @@ REQUIREMENTS: dict = {
     'dev': [
     ],
     'doc': [
-        'sphinx',
         'acc-py-sphinx',
+        'myst-parser',
     ],
 }
 

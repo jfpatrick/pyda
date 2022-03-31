@@ -48,6 +48,7 @@ Documentation contents
     usage
     async_usage
     rbac
+    about_this_prototype
 
 .. toctree::
     :caption: Reference docs
