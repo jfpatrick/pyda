@@ -167,11 +167,11 @@ In JAPC a parameter can be either a device property, or a field of a device prop
 
 -->
 
-<!--
-#### Complex datastructures
+#### Complex data structures not there yet
 
-Enums, functions etc. not yet implemented. TODO
--->
+Current data model implementation does not support complex data structures, such as enums,
+functions and function lists.
+
 
 <!--
 #### Property specific casting
