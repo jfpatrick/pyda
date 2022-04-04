@@ -148,6 +148,31 @@ simple_getter = functools.partial(client.get, selector=the_default_selector, dev
 print(simple_getter().value)
 ```
 
+#### InCA
+
+PyJapc used to configure InCA in initializer based on the arguments supplied. This lead to often confusing
+behavior. While PyDA does not currently provide a convenient way of configuring InCA, it's possible to
+access the routine that enables it:
+
+```python
+import pyda_japc
+import pyda
+from pyda_japc._provider import enable_inca
+
+enable_inca()
+client = pyda.CallbackClient(provider=pyda_japc.JapcProvider())
+...
+```
+
+API is not completely polished, hence a private import is required at the moment.
+
+Note, that `enable_inca` does not accept any arguments. While PyJapc would try to configure InCA for a
+specific InCA server based on the given timing user, this has no real benefit, since only the first
+request is given to a fixed server, while then routing is optimized automatically. Hence, `pyda_japc`
+uses the default resolution to configure InCA.
+
+This operation is also cannot be rolled back due to the way how InCA configurator works.
+
 #### No more timezone state
 
 In PyJapc, it is possible to pass a timezone to the constructor, which will influence `datetime` objects
