@@ -48,6 +48,7 @@ Documentation contents
     usage
     async_usage
     rbac
+    inca
     about_this_prototype
 
 .. toctree::

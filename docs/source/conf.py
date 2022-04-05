@@ -19,6 +19,7 @@ extensions = [
     'acc_py_sphinx.theme',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.doctest',
     'sphinx.ext.napoleon',
     'myst_parser',  # markdown support
@@ -53,3 +54,5 @@ html_show_sourcelink = True
 
 autosummary_generate = True
 autosummary_imported_members = True
+
+autosectionlabel_prefix_document = True
