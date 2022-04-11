@@ -23,10 +23,10 @@ def test__datetime_from_ns(ns, expected_datetime_args):
 
 @pytest.mark.parametrize(
     "context,expected_conversion_arg", [
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX', 100, 200), 200),
-        (pyds_model.SettingContext(100, 200), 200),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 100, 200), 200),
-        (pyds_model.AcquisitionContext(100), 100),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX', set_stamp=100, acquisition_stamp=200), 200),
+        (pyds_model.SettingContext(set_stamp=100, acquisition_stamp=200), 200),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=100, acquisition_stamp=200), 200),
+        (pyds_model.AcquisitionContext(acquisition_stamp=100), 100),
     ],
 )
 @mock.patch('pyda.data._data.datetime_from_ns')
@@ -40,9 +40,9 @@ def test__Header__acquisition_time(datetime_from_ns, context, expected_conversio
 
 @pytest.mark.parametrize(
     "context,expected_conversion_arg", [
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX', 100), 100),
-        (pyds_model.SettingContext(100), 100),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 100), None),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX', set_stamp=100), 100),
+        (pyds_model.SettingContext(set_stamp=100), 100),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=100), None),
         (pyds_model.AcquisitionContext(), None),
     ],
 )
@@ -61,9 +61,9 @@ def test__Header__set_time(datetime_from_ns, context, expected_conversion_arg):
 
 @pytest.mark.parametrize(
     "context,expected_conversion_arg", [
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX'), None),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX'), None),
         (pyds_model.SettingContext(), None),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 100), 100),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=100), 100),
         (pyds_model.AcquisitionContext(), None),
     ],
 )
@@ -83,12 +83,12 @@ def test__Header__cycle_time(datetime_from_ns, context, expected_conversion_arg)
 @pytest.mark.parametrize(
     "context,expected_sel", [
         (
-                pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX'),
+                pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX'),
                 data.Selector('MULTIPLEXED.SETTINGS.CTX'),
         ),
         (pyds_model.SettingContext(), None),
         (
-                pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 0),
+                pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=0),
                 data.Selector('CYCLEBOUND.ACQ.CTX'),
         ),
         (pyds_model.AcquisitionContext(), None),
@@ -103,10 +103,10 @@ def test__Header__selector(context, expected_sel):
     "context,expected_stamp", [
         # We're not using default (0) value for the stamp argument,
         # because DSF will produce current time
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX', 0, 100), 100),
-        (pyds_model.SettingContext(0, 100), 100),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 0, 200), 200),
-        (pyds_model.AcquisitionContext(300), 300),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX', set_stamp=0, acquisition_stamp=100), 100),
+        (pyds_model.SettingContext(set_stamp=0, acquisition_stamp=100), 100),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=0, acquisition_stamp=200), 200),
+        (pyds_model.AcquisitionContext(acquisition_stamp=300), 300),
     ],
 )
 def test__Header__acquisition_timestamp(context, expected_stamp):
@@ -116,14 +116,14 @@ def test__Header__acquisition_timestamp(context, expected_stamp):
 
 @pytest.mark.parametrize(
     "context,expected_stamp", [
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX'), 0),
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX', 100), 100),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX'), 0),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX', set_stamp=100), 100),
         (pyds_model.SettingContext(), 0),
-        (pyds_model.SettingContext(100), 100),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 0), None),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 0, 200), None),
+        (pyds_model.SettingContext(set_stamp=100), 100),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=0), None),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=0, acquisition_stamp=200), None),
         (pyds_model.AcquisitionContext(), None),
-        (pyds_model.AcquisitionContext(300), None),
+        (pyds_model.AcquisitionContext(acquisition_stamp=300), None),
     ],
 )
 def test__Header__set_timestamp(context, expected_stamp):
@@ -133,14 +133,14 @@ def test__Header__set_timestamp(context, expected_stamp):
 
 @pytest.mark.parametrize(
     "context,expected_stamp", [
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX'), None),
-        (pyds_model.MultiplexedSettingContext('MULTIPLEXED.SETTINGS.CTX', 100), None),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX'), None),
+        (pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX', set_stamp=100), None),
         (pyds_model.SettingContext(), None),
-        (pyds_model.SettingContext(100), None),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 0), 0),
-        (pyds_model.CycleBoundAcquisitionContext('CYCLEBOUND.ACQ.CTX', 200), 200),
+        (pyds_model.SettingContext(set_stamp=100), None),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=0), 0),
+        (pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=200), 200),
         (pyds_model.AcquisitionContext(), None),
-        (pyds_model.AcquisitionContext(300), None),
+        (pyds_model.AcquisitionContext(acquisition_stamp=300), None),
     ],
 )
 def test__Header__cycle_timestamp(context, expected_stamp):
@@ -151,30 +151,16 @@ def test__Header__cycle_timestamp(context, expected_stamp):
 @pytest.mark.parametrize(
     "context,expected_str", [
         (
-                pyds_model.MultiplexedSettingContext(
-                    'MULTIPLEXED.SETTINGS.CTX',
-                    set_stamp=int(10e9),
-                    acquisition_stamp=int(20e9),
-                ),
-                '[selector=MULTIPLEXED.SETTINGS.CTX, acquisition_time=1970-01-01 '
-                '00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
+                pyds_model.MultiplexedSettingContext(selector='MULTIPLEXED.SETTINGS.CTX', set_stamp=int(10e9), acquisition_stamp=int(20e9)),
+                '[selector=MULTIPLEXED.SETTINGS.CTX, acquisition_time=1970-01-01 00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
         ),
         (
-                pyds_model.SettingContext(
-                    set_stamp=int(10e9),
-                    acquisition_stamp=int(20e9),
-                ),
-                '[acquisition_time=1970-01-01 '
-                '00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
+                pyds_model.SettingContext(set_stamp=int(10e9), acquisition_stamp=int(20e9)),
+                '[acquisition_time=1970-01-01 00:00:20+00:00, set_time=1970-01-01 00:00:10+00:00]',
         ),
         (
-                pyds_model.CycleBoundAcquisitionContext(
-                    'CYCLEBOUND.ACQ.CTX',
-                    cycle_stamp=int(30e9),
-                    acquisition_stamp=int(20e9),
-                ),
-                '[selector=CYCLEBOUND.ACQ.CTX, acquisition_time=1970-01-01 '
-                '00:00:20+00:00, cycle_time=1970-01-01 00:00:30+00:00]',
+                pyds_model.CycleBoundAcquisitionContext(selector='CYCLEBOUND.ACQ.CTX', cycle_stamp=int(30e9), acquisition_stamp=int(20e9)),
+                '[selector=CYCLEBOUND.ACQ.CTX, acquisition_time=1970-01-01 00:00:20+00:00, cycle_time=1970-01-01 00:00:30+00:00]',
         ),
         (
                 pyds_model.AcquisitionContext(acquisition_stamp=int(20e9)),
