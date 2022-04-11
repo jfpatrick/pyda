@@ -17,10 +17,11 @@ with (HERE / 'README.md').open('rt') as fh:
 REQUIREMENTS: dict = {
     'core': [
         'numpy',
-        'pyds-model',
+        'pyds-model ~=0.1.0',  # During prototype phase ``0.<major>.<minor>``.
     ],
     'test': [
         'pytest',
+        'pytest-asyncio',
     ],
     'dev': [
     ],
