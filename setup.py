@@ -18,6 +18,7 @@ REQUIREMENTS: dict = {
     'core': [
         'numpy',
         'pyds-model ~=0.1.0',  # During prototype phase ``0.<major>.<minor>``.
+        'typing-extensions',
     ],
     'test': [
         'pytest',
