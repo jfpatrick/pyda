@@ -5,6 +5,7 @@ For reference see
 https://packaging.python.org/guides/distributing-packages-using-setuptools/
 
 """
+import os
 from pathlib import Path
 
 from setuptools import find_packages, setup
@@ -14,10 +15,28 @@ with (HERE / 'README.md').open('rt') as fh:
     LONG_DESCRIPTION = fh.read().strip()
 
 
+def depends(project_name: str, version_specifier: str = "") -> str:
+    """
+    Given a project name and a version specifier, create a requirement specification.
+
+    The version specifier can be overridden by an environment variable of the following form:
+
+        REQUIRE_{project_name.upper()}_VERSION_SPEC="{spec}"
+
+    Special characters (``-``, ``.``) in the project name are normalised to ``_``
+
+    """
+    normed_name = project_name.replace('-', '_').replace('.', '_')
+    env_name = f"REQUIRE_{normed_name.upper()}_VERSION_SPEC"
+    spec = os.environ.get(env_name, version_specifier)
+    return f"{project_name} {spec}".rstrip()
+
+
 REQUIREMENTS: dict = {
     'core': [
         'numpy',
-        'pyds-model ~=0.1.0',  # During prototype phase ``0.<major>.<minor>``.
+        depends('pyds-model', '~=0.1.0'),  # During prototype phase ``0.<major>.<minor>``.
+        'typing-extensions',
     ],
     'test': [
         'pytest',
